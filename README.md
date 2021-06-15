@@ -1,6 +1,6 @@
 # cat_calories
 
-A new Flutter project.
+Calorie tracker
 
 ## Getting Started
 
