@@ -30,8 +30,8 @@ class WakingPeriodRepository {
         .delete('waking_periods', where: 'id = ?', whereArgs: [wakingPeriod.id]);
   }
 
-  Future<WakingPeriodModel?> findActual() async {
-    final wakingPeriodsResult = await DBProvider.db.rawQuery('SELECT * FROM waking_periods WHERE ended_at IS NULL');
+  Future<WakingPeriodModel?> findActual(ProfileModel profile) async {
+    final wakingPeriodsResult = await DBProvider.db.rawQuery('SELECT * FROM waking_periods WHERE ended_at IS NULL AND profile_id = ?', [profile.id]);
 
     if (wakingPeriodsResult.toList().length == 0) {
       return null;

@@ -82,3 +82,9 @@ class WakingPeriodUpdatingEvent extends AbstractHomeEvent {
 
   WakingPeriodUpdatingEvent(this.wakingPeriod);
 }
+
+class RemovingDayCaloriesEvent extends AbstractHomeEvent {
+  final DateTime date;
+
+  RemovingDayCaloriesEvent(this.date);
+}

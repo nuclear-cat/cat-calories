@@ -56,8 +56,10 @@ class WakingPeriodInfo extends StatelessWidget {
           final int totalRangeSeconds = toTimestamp - fromTimestamp;
           final double caloriesPerSecond = wakingPeriod!.caloriesLimitGoal / totalRangeSeconds;
           final int secondsToEndDay = toTimestamp - currentTimestamp;
-
           final double allowedCalories = wakingPeriod!.caloriesLimitGoal - caloriesPerSecond * secondsToEndDay - totalCalories;
+
+          final double allowedSeconds = allowedCalories / caloriesPerSecond;
+          final Duration allowedDuration = Duration(seconds: allowedSeconds.round().toInt());
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,25 +68,34 @@ class WakingPeriodInfo extends StatelessWidget {
                 padding: const EdgeInsets.all(4.0),
               ),
               Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(DateFormat('EEEE').format(wakingPeriod!.startedAt) + ' waking period'),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text(
+                  DateFormat('EEEE').format(wakingPeriod!.startedAt) + ' waking period',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
-              Divider(),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 child: Text(
                   DateFormat('MMM d, HH:mm').format(wakingPeriod!.startedAt) +
                       ' ~ ' +
                       DateFormat('MMM d, HH:mm').format(toDateTime),
-                  style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                  style: TextStyle(
+                    color: Colors.black.withOpacity(0.6),
+                    fontSize: 12,
+                  ),
                 ),
               ),
+              Divider(),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                 child: Text(
                   'Goal: ' +
                       wakingPeriod!.caloriesLimitGoal.toString() +
-                      ' kCal in ' +
+                      ' kcal in ' +
                       wakingPeriod!.getExpectedWakingDuration().inHours.toString() +
                       ' hours',
                   style: TextStyle(color: Colors.black.withOpacity(0.6)),
@@ -92,19 +103,28 @@ class WakingPeriodInfo extends StatelessWidget {
               ),
               Builder(builder: (BuildContext context) {
                 if (allowedCalories > 0) {
+                  final String stringAllowedDuration = (allowedDuration.inHours).toString().padLeft(2, '0') +
+                      ':' +
+                      (allowedDuration.inMinutes.remainder(60)).toString().padLeft(2, '0');
+
                   return Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     child: Text(
-                      'You can eat ' + allowedCalories.toStringAsFixed(2) + ' kCal',
+                      'You can eat ' + allowedCalories.toStringAsFixed(2) + ', $stringAllowedDuration',
                       style: TextStyle(color: Colors.green),
                     ),
                   );
                 }
 
+                final String stringAllowedDuration = (allowedDuration.inHours * -1).toString().padLeft(2, '0') +
+                    ':' +
+                    (allowedDuration.inMinutes.remainder(60) * -1).toString().padLeft(2, '0');
+
                 return Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                   child: Text(
-                    'You can eat ' + allowedCalories.toStringAsFixed(2) + ' kCal',
+                    'You can eat ' + allowedCalories.toStringAsFixed(2) + ' (after $stringAllowedDuration)',
+                    // 'You can eat after',
                     style: TextStyle(color: Colors.red),
                   ),
                 );

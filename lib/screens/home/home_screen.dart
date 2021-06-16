@@ -124,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       if (state is HomeFetched) {
                         return UserAccountsDrawerHeader(
                           accountName: Text(state.activeProfile.name),
-                          accountEmail: Text('Goal: ' + state.activeProfile.caloriesLimitGoal.toString() + ' kCal  / day'),
+                          accountEmail: Text('Goal: ' + state.activeProfile.caloriesLimitGoal.toString() + ' kcal  / day'),
                           currentAccountPicture: CircleAvatar(
                             backgroundImage: CatAvatarResolver.getImageByProfle(state.activeProfile),
                           ),
@@ -188,7 +188,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             appBar: AppBar(
               bottom: TabBar(
                 labelStyle: TextStyle(
-                  fontSize: 11,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
                 ),
                 labelPadding: EdgeInsets.zero,
                 tabs: [
@@ -196,14 +197,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     text: 'Info',
                   ),
                   Tab(
+                    text: 'kCal',
+                  ),
+                  Tab(
                     // icon: Icon(Icons.access_time),
                     text: 'Waking periods',
                   ),
                   Tab(
                     text: 'Days',
-                  ),
-                  Tab(
-                    text: 'kCal',
                   ),
                 ],
               ),
@@ -248,12 +249,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             totalCalories: state.getTodayCaloriesSum(),
                             currentDateTime: _currentDateTime,
                             onDonePressed: () {
-                              // set up the buttons
-                              Widget cancelButton = MaterialButton(
-                                child: Text("Cancel"),
-                                onPressed: () {},
-                              );
-
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
@@ -306,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 child: Padding(
                                   padding: EdgeInsets.all(20),
                                   child: Text(
-                                      DateFormat('MMM d, y').format(day.createdAtDay) + ': ' + day.valueSum.toString() + ' kCal'),
+                                      DateFormat('MMM d, y').format(day.createdAtDay) + ': ' + day.valueSum.round().toString() + ' kcal'),
                                 ),
                               ),
                             );
@@ -319,6 +314,83 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     child: Text('Error'),
                   );
                 }),
+                BlocBuilder<HomeBloc, AbstractHomeState>(
+                  builder: (context, state) {
+                    if (state is HomeFetchingInProgress) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    if (state is HomeFetched) {
+                      _calorieItems = state.calorieItems;
+
+                      return ReorderableListView.builder(
+                        padding: EdgeInsets.all(10),
+                        itemBuilder: (context, int index) {
+                          final CalorieItemModel calorieItem = _calorieItems[index];
+
+                          final description = DateFormat('HH:mm').format(calorieItem.createdAt) +
+                              (calorieItem.description == null ? '' : (', ' + calorieItem.description!.toString()));
+
+                          return ListTile(
+                            key: Key(index.toString()),
+                            title: Text(
+                              calorieItem.value.toStringAsFixed(2) + ' kCal',
+                              style: TextStyle(color: (calorieItem.value > 0 ? Colors.red : Colors.green)),
+                            ),
+                            subtitle: Text(description),
+                            trailing: ReorderableDragStartListener(
+                              index: index,
+                              child: const Icon(Icons.drag_handle),
+                            ),
+                            onTap: () {
+                              showModalBottomSheet<dynamic>(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  builder: (BuildContext context) {
+                                    return Wrap(
+                                      children: <Widget>[
+                                        ListTile(
+                                          title: Text('Edit'),
+                                          onTap: () {
+                                            Navigator.of(context).pop();
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => EditCalorieItemScreen(calorieItem)),
+                                            );
+                                          },
+                                        ),
+                                        ListTile(
+                                          title: Text('Remove'),
+                                          onTap: () {
+                                            Navigator.of(context).pop();
+                                            _removeCalorieItem(calorieItem, _calorieItems);
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  });
+                            },
+                          );
+                        },
+                        itemCount: _calorieItems.length,
+                        onReorder: (int oldIndex, int newIndex) {
+                          setState(() {
+                            if (oldIndex < newIndex) {
+                              newIndex -= 1;
+                            }
+                            final item = _calorieItems.removeAt(oldIndex);
+                            _calorieItems.insert(newIndex, item);
+                            BlocProvider.of<HomeBloc>(context).add(CalorieItemListResortingEvent(_calorieItems));
+                          });
+                        },
+                      );
+                    }
+                    return Center(
+                      child: Text('Error'),
+                    );
+                  },
+                ),
                 BlocBuilder<HomeBloc, AbstractHomeState>(
                   builder: (context, state) {
                     if (state is HomeFetchingInProgress) {
@@ -422,82 +494,66 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             key: Key(index.toString()),
                             title: Text(dayItem.valueSum.toStringAsFixed(2) + ' kCal'),
                             subtitle: Text((DateFormat('MMM d, y').format(dayItem.createdAtDay))),
-                          );
-                        },
-                      );
-                    }
-
-                    return Center(
-                      child: Text('Error'),
-                    );
-                  },
-                ),
-                BlocBuilder<HomeBloc, AbstractHomeState>(
-                  builder: (context, state) {
-                    if (state is HomeFetchingInProgress) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    if (state is HomeFetched) {
-                      _calorieItems = state.calorieItems;
-
-                      return ReorderableListView.builder(
-                        padding: EdgeInsets.all(10),
-                        itemBuilder: (context, int index) {
-                          final CalorieItemModel calorieItem = _calorieItems[index];
-
-                          return ListTile(
-                            key: Key(index.toString()),
-                            title: Text(calorieItem.value.toStringAsFixed(2) + ' kCal'),
-                            subtitle: Text((DateFormat('HH:mm').format(calorieItem.createdAt))),
-                            trailing: ReorderableDragStartListener(
-                              index: index,
-                              child: const Icon(Icons.drag_handle),
-                            ),
                             onTap: () {
                               showModalBottomSheet<dynamic>(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  builder: (BuildContext context) {
-                                    return Wrap(
-                                      children: <Widget>[
-                                        ListTile(
-                                          title: Text('Edit'),
-                                          onTap: () {
-                                            Navigator.of(context).pop();
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (context) => EditCalorieItemScreen(calorieItem)),
-                                            );
-                                          },
-                                        ),
-                                        ListTile(
-                                          title: Text('Remove'),
-                                          onTap: () {
-                                            Navigator.of(context).pop();
-                                            _removeCalorieItem(calorieItem, _calorieItems);
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  });
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (BuildContext context) {
+                                  return Wrap(
+                                    children: <Widget>[
+                                      ListTile(
+                                        title: Text('Show calorie items'),
+                                        onTap: () {
+                                          Navigator.of(context).pop();
+                                          // Navigator.push(
+                                          //   context,
+                                          //   MaterialPageRoute(builder: (context) => EditWakingPeriodScreen(wakingPeriod)),
+                                          // );
+                                        },
+                                      ),
+                                      ListTile(
+                                        title: Text('Remove day calories'),
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: Text('Remove day calories'),
+                                                content: Text('Continue?'),
+                                                actions: [
+                                                  MaterialButton(
+                                                    child: Text("Cancel"),
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                  ),
+                                                  MaterialButton(
+                                                    child: Text("Ok"),
+                                                    onPressed: () {
+                                                      BlocProvider.of<HomeBloc>(context).add(RemovingDayCaloriesEvent(dayItem.createdAtDay));
+
+                                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Day removed')));
+
+                                                      Navigator.of(context).pop();
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             },
                           );
                         },
-                        itemCount: _calorieItems.length,
-                        onReorder: (int oldIndex, int newIndex) {
-                          setState(() {
-                            if (oldIndex < newIndex) {
-                              newIndex -= 1;
-                            }
-                            final item = _calorieItems.removeAt(oldIndex);
-                            _calorieItems.insert(newIndex, item);
-                            BlocProvider.of<HomeBloc>(context).add(CalorieItemListResortingEvent(_calorieItems));
-                          });
-                        },
                       );
                     }
+
                     return Center(
                       child: Text('Error'),
                     );
@@ -560,8 +616,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                         CalculatorWidget(
                                           controller: _calorieItemController,
                                           onPressed: () {
-                                            _createCalorieItem(_calorieItemPreparedSum, state.activeProfile,
-                                                _calorieItems, state.currentWakingPeriod!);
+                                            _createCalorieItem(_calorieItemPreparedSum, state.activeProfile, _calorieItems,
+                                                state.currentWakingPeriod!);
                                           },
                                         ),
                                       ],

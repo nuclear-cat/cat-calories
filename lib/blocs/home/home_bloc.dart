@@ -134,7 +134,7 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
     final List<DayResultModel> _dayResultsList = await calorieItemRepository.fetchDaysByProfile(activeProfile, 30);
     final List<ProfileModel> _profiles = await _profileRepository.fetchAll();
     final List<WakingPeriodModel> wakingPeriods = await _wakingPeriodRepository.fetchByProfile(activeProfile);
-    final WakingPeriodModel? currentWakingPeriod = await _wakingPeriodRepository.findActual();
+    final WakingPeriodModel? currentWakingPeriod = await _wakingPeriodRepository.findActual(activeProfile);
     final DateTime startDate = DateTime(nowDateTime.year, nowDateTime.month, nowDateTime.day);
     final DateTime endDate = DateTime(nowDateTime.year, nowDateTime.month, nowDateTime.day).add(Duration(days: 1));
     List<CalorieItemModel> _calorieItems = [];
