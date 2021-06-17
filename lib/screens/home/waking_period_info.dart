@@ -33,6 +33,7 @@ class WakingPeriodInfo extends StatelessWidget {
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
                   'No active waking periods',
+                  // style: TextStyle(color: Colors.black.withOpacity(0.6)),
                   style: TextStyle(color: Colors.black.withOpacity(0.6)),
                 ),
               ),
@@ -136,7 +137,13 @@ class WakingPeriodInfo extends StatelessWidget {
                 children: [
                   MaterialButton(
                     padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
-                    child: const Text('Done period'),
+                    child: Text(
+                      'Done period',
+                      style: TextStyle(
+                        color: Theme.of(context).buttonColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     onPressed: () => onDonePressed(),
                   ),
                   MaterialButton(
@@ -148,7 +155,13 @@ class WakingPeriodInfo extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => EditWakingPeriodScreen(wakingPeriod!)),
                       );
                     },
-                    child: const Text('Edit'),
+                    child: Text(
+                      'Edit',
+                      style: TextStyle(
+                        color: Theme.of(context).buttonColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ],
               ),

@@ -257,7 +257,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                     content: Text('${state.getTodayCaloriesSum()} kCal by current waking period. Continue?'),
                                     actions: [
                                       MaterialButton(
-                                        child: Text("Cancel"),
+                                        child: Text('Cancel'),
                                         onPressed: () {
                                           Navigator.pop(context);
                                         },
