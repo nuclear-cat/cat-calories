@@ -23,7 +23,8 @@ class WakingPeriodModel {
     required this.caloriesLimitGoal,
   });
 
-  factory WakingPeriodModel.fromJson(Map<String, dynamic> json) => WakingPeriodModel(
+  factory WakingPeriodModel.fromJson(Map<String, dynamic> json) =>
+      WakingPeriodModel(
         id: json['id'],
         description: json['description'],
         createdAt: DateTime.fromMillisecondsSinceEpoch(json['created_at']),
@@ -36,7 +37,8 @@ class WakingPeriodModel {
         caloriesLimitGoal: json['calories_limit_goal'],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         'id': id,
         'description': description,
         'created_at': createdAt.millisecondsSinceEpoch,
@@ -51,6 +53,26 @@ class WakingPeriodModel {
 
   Duration getExpectedWakingDuration() {
     return Duration(seconds: this.expectedWakingTimeSeconds);
+  }
+
+  int getPeriodTimestamp() {
+    return (startedAt.millisecondsSinceEpoch / 1000).round().toInt();
+  }
+
+  DateTime getToDateTime() {
+    return startedAt.add(getExpectedWakingDuration());
+  }
+
+  int getToTimestamp() {
+    return (getToDateTime().millisecondsSinceEpoch / 1000).round().toInt();
+  }
+
+  int totalRangeSeconds() {
+    return getToTimestamp() - getPeriodTimestamp();
+  }
+
+  double getCaloriesPerSecond() {
+    return caloriesLimitGoal / totalRangeSeconds();
   }
 
   WakingPeriodModel setExpectedWakingDuration(Duration duration) {

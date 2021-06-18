@@ -33,7 +33,6 @@ class WakingPeriodInfo extends StatelessWidget {
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
                   'No active waking periods',
-                  // style: TextStyle(color: Colors.black.withOpacity(0.6)),
                   style: TextStyle(color: Colors.black.withOpacity(0.6)),
                 ),
               ),
@@ -50,16 +49,10 @@ class WakingPeriodInfo extends StatelessWidget {
             ]);
           }
 
-          final int fromTimestamp = (wakingPeriod!.startedAt.millisecondsSinceEpoch / 1000).round().toInt();
-          final DateTime toDateTime = wakingPeriod!.startedAt.add(wakingPeriod!.getExpectedWakingDuration());
-          final int toTimestamp = (toDateTime.millisecondsSinceEpoch / 1000).round().toInt();
           final int currentTimestamp = (currentDateTime.millisecondsSinceEpoch / 1000).round().toInt();
-          final int totalRangeSeconds = toTimestamp - fromTimestamp;
-          final double caloriesPerSecond = wakingPeriod!.caloriesLimitGoal / totalRangeSeconds;
-          final int secondsToEndDay = toTimestamp - currentTimestamp;
-          final double allowedCalories = wakingPeriod!.caloriesLimitGoal - caloriesPerSecond * secondsToEndDay - totalCalories;
-
-          final double allowedSeconds = allowedCalories / caloriesPerSecond;
+          final int secondsToEndDay = wakingPeriod!.getToTimestamp() - currentTimestamp;
+          final double allowedCalories = wakingPeriod!.caloriesLimitGoal - wakingPeriod!.getCaloriesPerSecond() * secondsToEndDay - totalCalories;
+          final double allowedSeconds = allowedCalories / wakingPeriod!.getCaloriesPerSecond();
           final Duration allowedDuration = Duration(seconds: allowedSeconds.round().toInt());
 
           return Column(
@@ -83,7 +76,7 @@ class WakingPeriodInfo extends StatelessWidget {
                 child: Text(
                   DateFormat('MMM d, HH:mm').format(wakingPeriod!.startedAt) +
                       ' ~ ' +
-                      DateFormat('MMM d, HH:mm').format(toDateTime),
+                      DateFormat('MMM d, HH:mm').format(wakingPeriod!.getToDateTime()),
                   style: TextStyle(
                     color: Colors.black.withOpacity(0.6),
                     fontSize: 12,
@@ -111,7 +104,7 @@ class WakingPeriodInfo extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     child: Text(
-                      'You can eat ' + allowedCalories.toStringAsFixed(2) + ', $stringAllowedDuration',
+                      'You can eat ' + allowedCalories.toStringAsFixed(2) + ' kcal , $stringAllowedDuration',
                       style: TextStyle(color: Colors.green),
                     ),
                   );
@@ -124,7 +117,7 @@ class WakingPeriodInfo extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                   child: Text(
-                    'You can eat ' + allowedCalories.toStringAsFixed(2) + ' (after $stringAllowedDuration)',
+                    'You can eat ' + allowedCalories.toStringAsFixed(2) + ' kcal (after $stringAllowedDuration)',
                     // 'You can eat after',
                     style: TextStyle(color: Colors.red),
                   ),
