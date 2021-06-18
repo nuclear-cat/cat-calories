@@ -8,6 +8,8 @@ abstract class AbstractHomeState {}
 class HomeFetchingInProgress extends AbstractHomeState {}
 
 class HomeFetched extends AbstractHomeState {
+
+  final DateTime nowDateTime;
   final List<CalorieItemModel> calorieItems;
   final List<DayResultModel> dayResults;
   final List<ProfileModel> profiles;
@@ -19,6 +21,7 @@ class HomeFetched extends AbstractHomeState {
 
 
   HomeFetched({
+    required this.nowDateTime,
     required this.calorieItems,
     required this.dayResults,
     required this.profiles,

@@ -83,8 +83,9 @@ class WakingPeriodUpdatingEvent extends AbstractHomeEvent {
   WakingPeriodUpdatingEvent(this.wakingPeriod);
 }
 
-class RemovingDayCaloriesEvent extends AbstractHomeEvent {
+class RemovingCaloriesByCreatedAtDayEvent extends AbstractHomeEvent {
   final DateTime date;
+  final ProfileModel profile;
 
-  RemovingDayCaloriesEvent(this.date);
+  RemovingCaloriesByCreatedAtDayEvent(this.date, this.profile);
 }

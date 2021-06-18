@@ -29,6 +29,17 @@ class CalorieItemRepository {
     return calorieItemsResult.map((element) => CalorieItemModel.fromJson(element)).toList();
   }
 
+  Future<void> deleteByCreatedAtDay(DateTime createdAtDay, ProfileModel profile) async {
+
+    final int dateTimestamp = (DateTime(createdAtDay.year, createdAtDay.month, createdAtDay.day).millisecondsSinceEpoch / 100000).round().toInt();
+
+    await DBProvider.db.delete(
+      'calorie_items',
+      where: 'created_at_day = ? AND profile_id = ?',
+      whereArgs: [dateTimestamp, profile.id],
+    );
+  }
+
   Future<List<CalorieItemModel>> fetchByWakingPeriodAndProfile(WakingPeriodModel wakingPeriod, ProfileModel profile) async {
     final calorieItemsResult = await DBProvider.db.query(
       'calorie_items',

@@ -125,6 +125,10 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
       await _wakingPeriodRepository.update(event.wakingPeriod);
 
       yield* _fetchItems();
+    } else if (event is RemovingCaloriesByCreatedAtDayEvent) {
+      await calorieItemRepository.deleteByCreatedAtDay(event.date, event.profile);
+
+      yield* _fetchItems();
     }
   }
 
@@ -144,6 +148,7 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
     }
 
     yield HomeFetched(
+      nowDateTime: DateTime.now(),
       calorieItems: _calorieItems,
       dayResults: _dayResultsList,
       profiles: _profiles,
