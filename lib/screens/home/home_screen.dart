@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         _calorieItemController.text = '';
       }));
     }
-    
+
     return Scaffold(
       body: Scaffold(
         body: DefaultTabController(
@@ -180,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               borderRadius:
                                   BorderRadius.only(topLeft: const Radius.circular(10.0), topRight: const Radius.circular(10.0))),
                           child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: <Widget>[
-                            Text('= ${totalCaloriesNew} kCal', textAlign: TextAlign.center),
+                            Text('= ${totalCaloriesNew.toStringAsFixed(2)} kCal', textAlign: TextAlign.center),
                           ]),
                         ),
                         Builder(
