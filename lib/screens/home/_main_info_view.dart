@@ -153,9 +153,9 @@ class _MainInfoViewState extends State<MainInfoView> {
                         child: Text(
                           'Goal: ' +
                               state.currentWakingPeriod!.caloriesLimitGoal.toString() +
-                              ' kcal in ' +
+                              ' kcal/' +
                               state.currentWakingPeriod!.getExpectedWakingDuration().inHours.toString() +
-                              ' hours',
+                              'h (${state.currentWakingPeriod!.getCaloriesPerHour().toStringAsFixed(2)} kcal/h)',
                           style: TextStyle(color: Colors.black.withOpacity(0.6)),
                         ),
                       ),
