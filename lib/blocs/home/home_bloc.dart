@@ -129,6 +129,14 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
       await calorieItemRepository.deleteByCreatedAtDay(event.date, event.profile);
 
       yield* _fetchItems();
+    } else if (event is CalorieItemEatingEvent) {
+
+      final CalorieItemModel calorieItem = event.calorieItem;
+      calorieItem.eatenAt = calorieItem.isEaten() ? null : DateTime.now();
+
+      await calorieItemRepository.update(calorieItem);
+
+      yield* _fetchItems();
     }
   }
 

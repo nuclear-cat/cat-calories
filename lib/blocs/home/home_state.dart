@@ -8,7 +8,6 @@ abstract class AbstractHomeState {}
 class HomeFetchingInProgress extends AbstractHomeState {}
 
 class HomeFetched extends AbstractHomeState {
-
   final DateTime nowDateTime;
   final List<CalorieItemModel> calorieItems;
   final List<DayResultModel> dayResults;
@@ -18,7 +17,6 @@ class HomeFetched extends AbstractHomeState {
   final DateTime startDate;
   final DateTime endDate;
   final WakingPeriodModel? currentWakingPeriod;
-
 
   HomeFetched({
     required this.nowDateTime,
@@ -32,10 +30,13 @@ class HomeFetched extends AbstractHomeState {
     required this.currentWakingPeriod,
   });
 
-  double getTodayCaloriesSum() {
+  double getPeriodCaloriesEatenSum() {
     double totalCalories = 0;
+
     calorieItems.forEach((CalorieItemModel calorieItem) {
-      totalCalories += calorieItem.value;
+      if (calorieItem.isEaten()) {
+        totalCalories += calorieItem.value;
+      }
     });
 
     return totalCalories;

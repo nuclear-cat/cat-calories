@@ -31,6 +31,12 @@ class CalorieItemRemovingEvent extends AbstractHomeEvent {
   CalorieItemRemovingEvent(this.calorieItem, this.calorieItems, this.callback);
 }
 
+class CalorieItemEatingEvent extends AbstractHomeEvent {
+  final CalorieItemModel calorieItem;
+
+  CalorieItemEatingEvent(this.calorieItem);
+}
+
 class CalorieItemListUpdatingEvent extends AbstractHomeEvent {
   final CalorieItemModel calorieItem;
   final List<CalorieItemModel> calorieItems;

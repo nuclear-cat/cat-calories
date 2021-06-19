@@ -17,7 +17,6 @@ class CalorieItemsView extends StatefulWidget {
 }
 
 class _CalorieItemsViewState extends State<CalorieItemsView> {
-
   void _removeCalorieItem(CalorieItemModel calorieItem, List<CalorieItemModel> calorieItems) {
     BlocProvider.of<HomeBloc>(context).add(CalorieItemRemovingEvent(calorieItem, calorieItems, () {
       final snackBar = SnackBar(content: Text('Item removed'));
@@ -37,52 +36,64 @@ class _CalorieItemsViewState extends State<CalorieItemsView> {
           final _calorieItems = state.calorieItems;
 
           return ReorderableListView.builder(
-            padding: EdgeInsets.all(10),
+            // padding: EdgeInsets.all(10),
             itemBuilder: (context, int index) {
               final CalorieItemModel calorieItem = _calorieItems[index];
 
               final description = DateFormat('HH:mm').format(calorieItem.createdAt) +
                   (calorieItem.description == null ? '' : (', ' + calorieItem.description!.toString()));
 
-              return ListTile(
+              return Opacity(
                 key: Key(index.toString()),
-                title: Text(
-                  calorieItem.value.toStringAsFixed(2) + ' kCal',
-                  style: TextStyle(color: (calorieItem.value > 0 ? DangerColor : SuccessColor)),
+                opacity: calorieItem.isEaten() ? 1 : 0.3,
+                child: ListTile(
+                  contentPadding: EdgeInsets.fromLTRB(25, 10, 25, 10),
+                  title: Text(
+                    calorieItem.value.toStringAsFixed(2) + ' kCal',
+                    style: TextStyle(color: (calorieItem.value > 0 ? DangerColor : SuccessColor)),
+                  ),
+                  subtitle: Text(description),
+                  trailing: ReorderableDragStartListener(
+                    index: index,
+                    child: const Icon(Icons.drag_handle),
+                  ),
+                  onTap: () {
+                    showModalBottomSheet<dynamic>(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (BuildContext context) {
+                          return Wrap(
+                            children: <Widget>[
+                              ListTile(
+                                title: Text(calorieItem.isEaten() ? 'Set as not eaten' : 'Set as eaten'),
+                                onTap: () {
+                                  BlocProvider.of<HomeBloc>(context).add(CalorieItemEatingEvent(calorieItem));
+                                  Navigator.of(context).pop();
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ok')));
+                                },
+                              ),
+                              ListTile(
+                                title: Text('Edit'),
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => EditCalorieItemScreen(calorieItem)),
+                                  );
+                                },
+                              ),
+                              ListTile(
+                                title: Text('Remove'),
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  _removeCalorieItem(calorieItem, _calorieItems);
+                                },
+                              ),
+                            ],
+                          );
+                        });
+                  },
                 ),
-                subtitle: Text(description),
-                trailing: ReorderableDragStartListener(
-                  index: index,
-                  child: const Icon(Icons.drag_handle),
-                ),
-                onTap: () {
-                  showModalBottomSheet<dynamic>(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (BuildContext context) {
-                        return Wrap(
-                          children: <Widget>[
-                            ListTile(
-                              title: Text('Edit'),
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => EditCalorieItemScreen(calorieItem)),
-                                );
-                              },
-                            ),
-                            ListTile(
-                              title: Text('Remove'),
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                _removeCalorieItem(calorieItem, _calorieItems);
-                              },
-                            ),
-                          ],
-                        );
-                      });
-                },
               );
             },
             itemCount: _calorieItems.length,

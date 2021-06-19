@@ -75,7 +75,7 @@ class _MainInfoViewState extends State<MainInfoView> {
                   final int secondsToEndDay = state.currentWakingPeriod!.getToTimestamp() - currentTimestamp;
                   final double allowedCalories = state.currentWakingPeriod!.caloriesLimitGoal -
                       state.currentWakingPeriod!.getCaloriesPerSecond() * secondsToEndDay -
-                      state.getTodayCaloriesSum();
+                      state.getPeriodCaloriesEatenSum();
                   final double allowedSeconds = allowedCalories / state.currentWakingPeriod!.getCaloriesPerSecond();
                   final Duration allowedDuration = Duration(seconds: allowedSeconds.round().toInt());
 
@@ -207,7 +207,7 @@ class _MainInfoViewState extends State<MainInfoView> {
                                 builder: (BuildContext context) {
                                   return AlertDialog(
                                     title: Text('Done waking period'),
-                                    content: Text('${state.getTodayCaloriesSum()} kCal by current waking period. Continue?'),
+                                    content: Text('${state.getPeriodCaloriesEatenSum()} kCal by current waking period. Continue?'),
                                     actions: [
                                       MaterialButton(
                                         child: Text('Cancel'),
@@ -219,7 +219,7 @@ class _MainInfoViewState extends State<MainInfoView> {
                                         child: Text("Ok"),
                                         onPressed: () {
                                           BlocProvider.of<HomeBloc>(context).add(
-                                              WakingPeriodEndingEvent(state.currentWakingPeriod!, state.getTodayCaloriesSum()));
+                                              WakingPeriodEndingEvent(state.currentWakingPeriod!, state.getPeriodCaloriesEatenSum()));
                                           Navigator.pop(context);
                                         },
                                       ),

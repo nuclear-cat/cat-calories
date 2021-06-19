@@ -5,7 +5,6 @@ class CatAvatarResolver {
   static AssetImage getImageByProfle(ProfileModel profile) {
     String number = profile.id.toString().substring(profile.id.toString().length - 1);
 
-
     return AssetImage('images/cats/cat_face_0$number.jpg');
   }
 }

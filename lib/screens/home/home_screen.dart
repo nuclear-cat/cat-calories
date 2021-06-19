@@ -131,17 +131,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   if (state is HomeFetched) {
                     if (state.currentWakingPeriod is WakingPeriodModel) {
                       return Text(
-                        '${state.getTodayCaloriesSum().round()} / ${state.currentWakingPeriod!.caloriesLimitGoal} kCal',
+                        '${state.getPeriodCaloriesEatenSum().round()} / ${state.currentWakingPeriod!.caloriesLimitGoal} kCal',
                         style: TextStyle(
                           fontSize: 16,
-                          color: (state.getTodayCaloriesSum() > state.currentWakingPeriod!.caloriesLimitGoal
+                          color: (state.getPeriodCaloriesEatenSum() > state.currentWakingPeriod!.caloriesLimitGoal
                               ? DangerColor
                               : SuccessColor),
                         ),
                       );
                     }
 
-                    return Text('For current period: ${state.getTodayCaloriesSum().round()} kCal',
+                    return Text('For current period: ${state.getPeriodCaloriesEatenSum().round()} kCal',
                         style: TextStyle(fontSize: 16));
                   }
                   return Text('...', style: TextStyle(fontSize: 16));
@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 isScrollControlled: true,
                 context: context,
                 builder: (BuildContext context) {
-                  final double totalCaloriesNew = _calorieItemPreparedSum.toDouble() + state.getTodayCaloriesSum();
+                  final double totalCaloriesNew = _calorieItemPreparedSum.toDouble() + state.getPeriodCaloriesEatenSum();
                   return FractionallySizedBox(
                     child: Wrap(
                       children: <Widget>[

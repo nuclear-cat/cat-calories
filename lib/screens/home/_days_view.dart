@@ -29,12 +29,12 @@ class _DaysViewState extends State<DaysView> {
           final List<DayResultModel> dayResultItems = state.dayResults;
 
           return ListView.builder(
-            padding: EdgeInsetsDirectional.all(10),
             itemCount: dayResultItems.length,
             itemBuilder: (BuildContext context, int index) {
               final DayResultModel dayItem = dayResultItems[index];
 
               return ListTile(
+                contentPadding: EdgeInsets.fromLTRB(25, 10, 25, 10),
                 key: Key(index.toString()),
                 title: Text(dayItem.valueSum.toStringAsFixed(2) + ' kCal'),
                 subtitle: Text((DateFormat('MMM d, y').format(dayItem.createdAtDay))),
