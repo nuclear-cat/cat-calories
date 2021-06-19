@@ -45,7 +45,6 @@ class CreateProfileScreenState extends State<CreateProfileScreen> {
               Icons.check,
             ),
             onPressed: () {
-
               if (!_formKey.currentState!.validate()) {
                 return;
               }
@@ -120,58 +119,6 @@ class CreateProfileScreenState extends State<CreateProfileScreen> {
                   ),
                 ],
               ),
-            ),
-          );
-
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: Wrap(
-              children: <Widget>[
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Name',
-                  ),
-                  textCapitalization: TextCapitalization.sentences,
-                  controller: _nameController,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter profile name';
-                    }
-
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Waking time (hours)',
-                    suffix: Text('hours'),
-                  ),
-                  controller: _wakingTimeHours,
-                  keyboardType: TextInputType.number,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please waking time';
-                    }
-
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Calories limit goal',
-                    suffix: Text('kCal'),
-                  ),
-                  controller: _caloriesLimitGoal,
-                  keyboardType: TextInputType.number,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter calories limit goal';
-                    }
-
-                    return null;
-                  },
-                ),
-              ],
             ),
           );
         }),

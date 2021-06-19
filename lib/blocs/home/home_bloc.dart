@@ -14,7 +14,6 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
   final CalorieItemRepository calorieItemRepository;
   final ProfileRepository _profileRepository;
   final WakingPeriodRepository _wakingPeriodRepository;
-
   final DateTime nowDateTime = DateTime.now();
   final String activeProfileKey = 'active_profile';
 
@@ -129,15 +128,31 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
       await calorieItemRepository.deleteByCreatedAtDay(event.date, event.profile);
 
       yield* _fetchItems();
-    } else if (event is CalorieItemEatingEvent) {
 
+      // Calorie item eat
+    } else if (event is CalorieItemEatingEvent) {
       final CalorieItemModel calorieItem = event.calorieItem;
       calorieItem.eatenAt = calorieItem.isEaten() ? null : DateTime.now();
 
       await calorieItemRepository.update(calorieItem);
 
       yield* _fetchItems();
+      // Delete profile
+    } else if (event is ProfileDeletingEvent) {
+      yield* _deleteProfile(event.profile);
     }
+  }
+
+  Stream<HomeFetched> _deleteProfile(ProfileModel profile) async* {
+    final List<ProfileModel> profiles = await _profileRepository.fetchAll();
+
+    if (profiles.length > 1) {
+      await _profileRepository.delete(profile);
+    }
+
+    _activeProfile = profiles.first;
+
+    yield* _fetchItems();
   }
 
   Stream<HomeFetched> _fetchItems() async* {

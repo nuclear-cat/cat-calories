@@ -1,7 +1,6 @@
 import 'package:cat_calories/blocs/home/home_bloc.dart';
 import 'package:cat_calories/blocs/home/home_event.dart';
 import 'package:cat_calories/blocs/home/home_state.dart';
-import 'package:cat_calories/models/calorie_item_model.dart';
 import 'package:cat_calories/models/profile_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,8 +29,6 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
 
-    double _currentSliderValue = 20;
-
     _nameController.text = profile.name;
     _wakingTimeHours.text = profile.getExpectedWakingDuration().inHours.toString();
     _caloriesLimitGoal.text = profile.caloriesLimitGoal.toString();
@@ -48,6 +45,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit profile', style: TextStyle(fontSize: 16)),
@@ -68,10 +66,60 @@ class EditProfileScreenState extends State<EditProfileScreen> {
               profile.updatedAt = DateTime.now();
 
               BlocProvider.of<HomeBloc>(context).add(ProfileUpdatingEvent(profile));
-
               Navigator.of(context).pop();
             },
           ),
+          BlocBuilder<HomeBloc, AbstractHomeState>(builder: (BuildContext context, state) {
+            if (state is HomeFetched) {
+              return PopupMenuButton<String>(
+                onSelected: (String value) {
+                  switch (value) {
+                    case 'delete':
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Delete profile'),
+                            content: Text('Continue?'),
+                            actions: [
+                              MaterialButton(
+                                child: Text("Cancel"),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              MaterialButton(
+                                child: Text("Ok"),
+                                onPressed: () {
+                                  BlocProvider.of<HomeBloc>(context).add(ProfileDeletingEvent(profile));
+
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(content: Text('Profile ${state.activeProfile.name} deleted')));
+
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                  }
+                },
+                itemBuilder: (BuildContext context) {
+                  return [
+                    PopupMenuItem<String>(
+                      enabled: state.profiles.length > 1 ? true : false,
+                      value: 'delete',
+                      child: Text('Delete profile'),
+                    ),
+                  ];
+                },
+              );
+            }
+
+            return Text('...');
+          }),
         ],
       ),
       body: SingleChildScrollView(
@@ -128,58 +176,6 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ],
               ),
-            ),
-          );
-
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: Wrap(
-              children: <Widget>[
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Name',
-                  ),
-                  textCapitalization: TextCapitalization.sentences,
-                  controller: _nameController,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter profile name';
-                    }
-
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Waking time (hours)',
-                    suffix: Text('hours'),
-                  ),
-                  controller: _wakingTimeHours,
-                  keyboardType: TextInputType.number,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please waking time';
-                    }
-
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Calories limit goal',
-                    suffix: Text('kCal'),
-                  ),
-                  controller: _caloriesLimitGoal,
-                  keyboardType: TextInputType.number,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter calories limit goal';
-                    }
-
-                    return null;
-                  },
-                ),
-              ],
             ),
           );
         }),

@@ -17,7 +17,6 @@ class WakingPeriodsView extends StatefulWidget {
 }
 
 class _WakingPeriodsViewState extends State<WakingPeriodsView> {
-
   void _removeWakingPeriod(WakingPeriodModel wakingPeriod) {
     BlocProvider.of<HomeBloc>(context).add(WakingPeriodDeletingEvent(wakingPeriod));
 
@@ -27,7 +26,6 @@ class _WakingPeriodsViewState extends State<WakingPeriodsView> {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocBuilder<HomeBloc, AbstractHomeState>(
       builder: (context, state) {
         if (state is HomeFetchingInProgress) {
@@ -40,15 +38,26 @@ class _WakingPeriodsViewState extends State<WakingPeriodsView> {
           final List<WakingPeriodModel> wakingPeriods = state.wakingPeriods;
 
           return ListView.builder(
-            padding: EdgeInsetsDirectional.all(10),
             itemCount: wakingPeriods.length,
             itemBuilder: (BuildContext context, int index) {
               final WakingPeriodModel wakingPeriod = wakingPeriods[index];
 
+              if (state.currentWakingPeriod != null && wakingPeriod.id == state.currentWakingPeriod!.id) {
+                return ListTile(
+                  contentPadding: EdgeInsets.fromLTRB(25, 10, 25, 10),
+                  tileColor: Theme.of(context).accentColor.withOpacity(0.1),
+                  title: Text('Current waking period'),
+                  subtitle: Text('From ' + (DateFormat('MMM d, HH:mm').format(wakingPeriod.createdAt))),
+                );
+              }
+
               return ListTile(
+                contentPadding: EdgeInsets.fromLTRB(25, 10, 25, 10),
                 key: Key(index.toString()),
                 title: Text(wakingPeriod.caloriesValue.toStringAsFixed(2) + ' kCal'),
-                subtitle: Text((DateFormat('MMM d, y HH:mm').format(wakingPeriod.createdAt))),
+                subtitle: Text((DateFormat('MMM d, HH:mm').format(wakingPeriod.startedAt)) +
+                    ' - ' +
+                    (DateFormat('MMM d, HH:mm').format(wakingPeriod.endedAt!))),
                 onTap: () {
                   showModalBottomSheet<dynamic>(
                       context: context,

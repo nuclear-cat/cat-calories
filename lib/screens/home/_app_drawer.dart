@@ -44,7 +44,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 children: state.profiles.map((ProfileModel profile) {
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundImage: CatAvatarResolver.getImageByProfle(state.activeProfile),
+                      backgroundImage: CatAvatarResolver.getImageByProfle(profile),
                     ),
                     title: Text(profile.name),
                     onTap: () {

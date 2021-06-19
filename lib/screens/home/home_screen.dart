@@ -38,8 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     _calorieItemController = TextEditingController();
 
     _timer = Timer.periodic(Duration(seconds: 5), (Timer t) {
-      setState(() {
-      });
+      setState(() {});
     });
 
     _calorieItemController.addListener(() {
@@ -79,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           id: null,
           value: value,
           sortOrder: 0,
-          eatenAt: null,
+          eatenAt: DateTime.now(),
           createdAt: DateTime.now(),
           description: null,
           profileId: profileId,
@@ -144,6 +143,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     return Text('For current period: ${state.getPeriodCaloriesEatenSum().round()} kCal',
                         style: TextStyle(fontSize: 16));
                   }
+
                   return Text('...', style: TextStyle(fontSize: 16));
                 },
               ),

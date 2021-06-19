@@ -64,6 +64,12 @@ class ProfileUpdatingEvent extends AbstractHomeEvent {
   ProfileUpdatingEvent(this.profile);
 }
 
+class ProfileDeletingEvent extends AbstractHomeEvent {
+  ProfileModel profile;
+
+  ProfileDeletingEvent(this.profile);
+}
+
 class WakingPeriodCreatingEvent extends AbstractHomeEvent {
   final WakingPeriodModel wakingPeriod;
 
