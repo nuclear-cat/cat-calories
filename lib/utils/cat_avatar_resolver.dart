@@ -3,9 +3,9 @@ import 'package:flutter/widgets.dart';
 
 class CatAvatarResolver {
   static AssetImage getImageByProfle(ProfileModel profile) {
+    String number = profile.id.toString().substring(profile.id.toString().length - 1);
 
-    // TODO: Сделать выбор картинки по последней цифре в ID
 
-    return AssetImage('images/cats/cat_face_00.jpg');
+    return AssetImage('images/cats/cat_face_0$number.jpg');
   }
 }

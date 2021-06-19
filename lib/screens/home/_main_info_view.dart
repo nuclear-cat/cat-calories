@@ -169,7 +169,7 @@ class _MainInfoViewState extends State<MainInfoView> {
                             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                             child: Text(
                               'You can eat ' + allowedCalories.toStringAsFixed(2) + ' kcal , $stringAllowedDuration',
-                              style: TextStyle(color: Colors.green),
+                              style: TextStyle(color: SuccessColor),
                             ),
                           );
                         }
@@ -183,7 +183,7 @@ class _MainInfoViewState extends State<MainInfoView> {
                           child: Text(
                             'You can eat ' + allowedCalories.toStringAsFixed(2) + ' kcal (after $stringAllowedDuration)',
                             // 'You can eat after',
-                            style: TextStyle(color: Colors.red),
+                            style: TextStyle(color: DangerColor),
                           ),
                         );
                       }),
