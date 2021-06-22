@@ -11,7 +11,7 @@ class HomeFetched extends AbstractHomeState {
   final DateTime nowDateTime;
   final List<CalorieItemModel> periodCalorieItems;
   final List<CalorieItemModel> todayCalorieItems;
-  final List<DayResultModel> dayResults;
+  final List<DayResultModel> days;
   final List<ProfileModel> profiles;
   final List<WakingPeriodModel> wakingPeriods;
   final ProfileModel activeProfile;
@@ -19,13 +19,12 @@ class HomeFetched extends AbstractHomeState {
   final DateTime endDate;
   final WakingPeriodModel? currentWakingPeriod;
   final double preparedCaloriesValue;
-  
-  
+
   HomeFetched({
     required this.nowDateTime,
     required this.periodCalorieItems,
     required this.todayCalorieItems,
-    required this.dayResults,
+    required this.days,
     required this.profiles,
     required this.wakingPeriods,
     required this.activeProfile,
@@ -60,7 +59,22 @@ class HomeFetched extends AbstractHomeState {
 
     totalCalories += preparedCaloriesValue;
 
-
     return totalCalories;
+  }
+
+  DateTime getDayStart() {
+    return DateTime(nowDateTime.year, nowDateTime.month, nowDateTime.day, 0, 0, 0);
+  }
+
+  List<DayResultModel> getDaysUntilToday() {
+    List<DayResultModel> days = [];
+
+    this.days.forEach((DayResultModel dayResult) {
+      if (getDayStart().millisecondsSinceEpoch > dayResult.createdAtDay.millisecondsSinceEpoch) {
+        days.add(dayResult);
+      }
+    });
+
+    return days;
   }
 }

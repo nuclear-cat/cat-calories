@@ -195,7 +195,7 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
       nowDateTime: DateTime.now(),
       periodCalorieItems: _calorieItems,
       todayCalorieItems: todayCalorieItems,
-      dayResults: _dayResultsList,
+      days: _dayResultsList,
       profiles: _profiles,
       wakingPeriods: wakingPeriods,
       activeProfile: activeProfile,

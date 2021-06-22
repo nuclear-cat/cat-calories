@@ -28,6 +28,10 @@ class _MainInfoViewState extends State<MainInfoView> {
       }
 
       if (state is HomeFetched) {
+
+
+
+
         return ListView(
           padding: EdgeInsetsDirectional.all(10),
           children: [
@@ -278,7 +282,7 @@ class _MainInfoViewState extends State<MainInfoView> {
               ),
             ),
             Column(
-              children: state.dayResults.map((DayResultModel day) {
+              children: state.getDaysUntilToday().map((DayResultModel day) {
                 return SizedBox(
                   width: double.infinity,
                   child: Card(

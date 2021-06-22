@@ -26,7 +26,7 @@ class _DaysViewState extends State<DaysView> {
         }
 
         if (state is HomeFetched) {
-          final List<DayResultModel> dayResultItems = state.dayResults;
+          final List<DayResultModel> dayResultItems = state.days;
 
           return ListView.builder(
             itemCount: dayResultItems.length,

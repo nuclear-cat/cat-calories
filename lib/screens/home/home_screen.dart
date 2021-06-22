@@ -78,18 +78,20 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return Scaffold(
       body: Scaffold(
         body: DefaultTabController(
-          length: 4,
+          length: 5,
           child: Scaffold(
             drawer: Drawer(
               child: AppDrawer(),
             ),
             appBar: AppBar(
               bottom: TabBar(
+                isScrollable: true,
+
                 labelStyle: TextStyle(
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
-                labelPadding: EdgeInsets.zero,
+                // labelPadding: EdgeInsets.zero,
                 tabs: [
                   Tab(
                     text: 'Info',
@@ -98,11 +100,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     text: 'kCal',
                   ),
                   Tab(
-                    // icon: Icon(Icons.access_time),
                     text: 'Waking periods',
                   ),
                   Tab(
                     text: 'Days',
+                  ),
+                  Tab(
+                    text: 'Products',
                   ),
                 ],
               ),
@@ -137,6 +141,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 CalorieItemsView(),
                 WakingPeriodsView(),
                 DaysView(),
+                Center(child: Text('TODO: Products'),),
               ],
             ),
           ),
