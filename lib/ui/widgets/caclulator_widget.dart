@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 
 class CalculatorWidget extends StatelessWidget {
-  const CalculatorWidget({Key? key, required this.controller, required this.onPressed})
-      : super(key: key);
-
   final TextEditingController controller;
   final VoidCallback onPressed;
 
+  const CalculatorWidget({
+    Key? key,
+    required this.controller,
+    required this.onPressed,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    final _isPortrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
+    final _isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
     return Container(
       child: GridView.count(
@@ -19,19 +21,15 @@ class CalculatorWidget extends StatelessWidget {
         crossAxisCount: _isPortrait ? 3 : 5,
         childAspectRatio: _isPortrait ? 2.5 : 4.0,
         children: <Widget>[
-
           CalculatorKeyWidget(Text('-', style: TextStyle(fontSize: 18.0)), () {
             controller.text += '-';
           }),
-
           CalculatorKeyWidget(Text('/', style: TextStyle(fontSize: 18.0)), () {
             controller.text += '/';
           }),
-
           CalculatorKeyWidget(Text('C', style: TextStyle(fontSize: 18.0)), () {
             controller.text = '';
           }),
-
           CalculatorKeyWidget(Text('+', style: TextStyle(fontSize: 18.0)), () {
             controller.text += '+';
           }),
@@ -39,13 +37,11 @@ class CalculatorWidget extends StatelessWidget {
             controller.text += '*';
           }),
           CalculatorKeyWidget(Icon(Icons.backspace), () {
-
             if (controller.text == null || controller.text.length == 0) {
-                return;
+              return;
             }
 
             controller.text = controller.text.substring(0, controller.text.length - 1);
-
           }),
           CalculatorKeyWidget(Text('1', style: TextStyle(fontSize: 18.0)), () {
             controller.text += '1';

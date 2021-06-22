@@ -9,7 +9,8 @@ class HomeFetchingInProgress extends AbstractHomeState {}
 
 class HomeFetched extends AbstractHomeState {
   final DateTime nowDateTime;
-  final List<CalorieItemModel> calorieItems;
+  final List<CalorieItemModel> periodCalorieItems;
+  final List<CalorieItemModel> todayCalorieItems;
   final List<DayResultModel> dayResults;
   final List<ProfileModel> profiles;
   final List<WakingPeriodModel> wakingPeriods;
@@ -17,10 +18,13 @@ class HomeFetched extends AbstractHomeState {
   final DateTime startDate;
   final DateTime endDate;
   final WakingPeriodModel? currentWakingPeriod;
-
+  final double preparedCaloriesValue;
+  
+  
   HomeFetched({
     required this.nowDateTime,
-    required this.calorieItems,
+    required this.periodCalorieItems,
+    required this.todayCalorieItems,
     required this.dayResults,
     required this.profiles,
     required this.wakingPeriods,
@@ -28,16 +32,34 @@ class HomeFetched extends AbstractHomeState {
     required this.startDate,
     required this.endDate,
     required this.currentWakingPeriod,
+    required this.preparedCaloriesValue,
   });
 
   double getPeriodCaloriesEatenSum() {
     double totalCalories = 0;
 
-    calorieItems.forEach((CalorieItemModel calorieItem) {
+    periodCalorieItems.forEach((CalorieItemModel calorieItem) {
       if (calorieItem.isEaten()) {
         totalCalories += calorieItem.value;
       }
     });
+
+    totalCalories += preparedCaloriesValue;
+
+    return totalCalories;
+  }
+
+  double getTodayCaloriesEatenSum() {
+    double totalCalories = 0;
+
+    todayCalorieItems.forEach((CalorieItemModel calorieItem) {
+      if (calorieItem.isEaten()) {
+        totalCalories += calorieItem.value;
+      }
+    });
+
+    totalCalories += preparedCaloriesValue;
+
 
     return totalCalories;
   }

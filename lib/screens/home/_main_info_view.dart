@@ -37,7 +37,7 @@ class _MainInfoViewState extends State<MainInfoView> {
                   if (state.currentWakingPeriod == null) {
                     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
                         child: Text(
                           'No active waking periods',
                           style: TextStyle(color: Colors.black.withOpacity(0.6)),
@@ -107,8 +107,6 @@ class _MainInfoViewState extends State<MainInfoView> {
                           ),
                         ),
                       ),
-
-
                       Builder(builder: (BuildContext context) {
                         final int overLimit = state.currentWakingPeriod!.getToTimestamp() - currentTimestamp;
 
@@ -146,7 +144,6 @@ class _MainInfoViewState extends State<MainInfoView> {
                           ),
                         );
                       }),
-
                       Divider(),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
@@ -207,7 +204,8 @@ class _MainInfoViewState extends State<MainInfoView> {
                                 builder: (BuildContext context) {
                                   return AlertDialog(
                                     title: Text('Done waking period'),
-                                    content: Text('${state.getPeriodCaloriesEatenSum()} kCal by current waking period. Continue?'),
+                                    content:
+                                        Text('${state.getPeriodCaloriesEatenSum()} kCal by current waking period. Continue?'),
                                     actions: [
                                       MaterialButton(
                                         child: Text('Cancel'),
@@ -218,8 +216,8 @@ class _MainInfoViewState extends State<MainInfoView> {
                                       MaterialButton(
                                         child: Text("Ok"),
                                         onPressed: () {
-                                          BlocProvider.of<HomeBloc>(context).add(
-                                              WakingPeriodEndingEvent(state.currentWakingPeriod!, state.getPeriodCaloriesEatenSum()));
+                                          BlocProvider.of<HomeBloc>(context).add(WakingPeriodEndingEvent(
+                                              state.currentWakingPeriod!, state.getPeriodCaloriesEatenSum()));
                                           Navigator.pop(context);
                                         },
                                       ),
@@ -254,6 +252,29 @@ class _MainInfoViewState extends State<MainInfoView> {
                     ],
                   );
                 }),
+              ),
+            ),
+            Card(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+                    child: Text(
+                      'Today: ' + DateFormat('MMM, d').format(state.nowDateTime),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  Divider(),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                    child: Text(
+                        'Today ${state.getPeriodCaloriesEatenSum().toStringAsFixed(2)} from ${state.activeProfile.caloriesLimitGoal.toStringAsFixed(2)} kcal'),
+                  ),
+                ],
               ),
             ),
             Column(

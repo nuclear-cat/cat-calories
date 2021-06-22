@@ -3,6 +3,7 @@ import 'package:cat_calories/models/profile_model.dart';
 import 'package:cat_calories/models/waking_period_model.dart';
 import 'package:cat_calories/repositories/profile_repository.dart';
 import 'package:cat_calories/repositories/waking_period_repository.dart';
+import 'package:cat_calories/utils/expression_executor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cat_calories/blocs/home/home_state.dart';
 import 'package:cat_calories/models/calorie_item_model.dart';
@@ -11,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'home_event.dart';
 
 class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
+
   final CalorieItemRepository calorieItemRepository;
   final ProfileRepository _profileRepository;
   final WakingPeriodRepository _wakingPeriodRepository;
@@ -19,6 +21,7 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
 
   ProfileModel? _activeProfile;
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  double _preparedCaloriesValue = 0;
 
   HomeBloc(this.calorieItemRepository, this._profileRepository, this._wakingPeriodRepository) : super(HomeFetchingInProgress());
 
@@ -69,43 +72,57 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
     await _setActiveProfile();
 
     if (event is CalorieItemListFetchingInProgressEvent) {
-      yield* _fetchItems();
-    } else if (event is CalorieItemListCreatingEvent) {
-      await calorieItemRepository.offsetSortOrder();
-      await calorieItemRepository.insert(event.calorieItem);
-      event.callback();
+      yield* _fetchHomeData();
+    } else if (event is CreatingCalorieItemEvent) {
 
-      yield* _fetchItems();
-    } else if (event is CalorieItemRemovingEvent) {
+      print('-----------------------');
+      print(_preparedCaloriesValue);
+
+      final CalorieItemModel calorieItem = CalorieItemModel(
+          id: null,
+          value: _preparedCaloriesValue,
+          sortOrder: 0,
+          eatenAt: DateTime.now(),
+          createdAt: DateTime.now(),
+          description: null,
+          profileId: _activeProfile!.id!,
+          wakingPeriodId: event.wakingPeriod.id!);
+
+      await calorieItemRepository.offsetSortOrder();
+      await calorieItemRepository.insert(calorieItem);
+      event.callback(calorieItem);
+
+      yield* _fetchHomeData();
+    } else if (event is RemovingCalorieItemEvent) {
       await calorieItemRepository.delete(event.calorieItem);
       event.callback();
 
-      yield* _fetchItems();
+      yield* _fetchHomeData();
     } else if (event is CalorieItemListResortingEvent) {
       await calorieItemRepository.resort(event.items);
 
-      yield* _fetchItems();
+      yield* _fetchHomeData();
     } else if (event is CalorieItemListUpdatingEvent) {
       await calorieItemRepository.update(event.calorieItem);
 
-      yield* _fetchItems();
+      yield* _fetchHomeData();
     } else if (event is ProfileCreatingEvent) {
       await _profileRepository.insert(event.profile);
 
-      yield* _fetchItems();
+      yield* _fetchHomeData();
     } else if (event is ProfileUpdatingEvent) {
       await _profileRepository.update(event.profile);
 
-      yield* _fetchItems();
-    } else if (event is ProfileChangingEvent) {
+      yield* _fetchHomeData();
+    } else if (event is ChangingProfileEvent) {
       _activeProfile = event.profile;
       _saveActiveProfile(event.profile);
 
-      yield* _fetchItems();
+      yield* _fetchHomeData();
     } else if (event is WakingPeriodCreatingEvent) {
       await _wakingPeriodRepository.insert(event.wakingPeriod);
 
-      yield* _fetchItems();
+      yield* _fetchHomeData();
     } else if (event is WakingPeriodEndingEvent) {
       final WakingPeriodModel wakingPeriod = event.wakingPeriod;
 
@@ -115,31 +132,32 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
 
       await _wakingPeriodRepository.update(event.wakingPeriod);
 
-      yield* _fetchItems();
+      yield* _fetchHomeData();
     } else if (event is WakingPeriodDeletingEvent) {
       await _wakingPeriodRepository.delete(event.wakingPeriod);
 
-      yield* _fetchItems();
+      yield* _fetchHomeData();
     } else if (event is WakingPeriodUpdatingEvent) {
       await _wakingPeriodRepository.update(event.wakingPeriod);
 
-      yield* _fetchItems();
+      yield* _fetchHomeData();
     } else if (event is RemovingCaloriesByCreatedAtDayEvent) {
       await calorieItemRepository.deleteByCreatedAtDay(event.date, event.profile);
 
-      yield* _fetchItems();
-
-      // Calorie item eat
+      yield* _fetchHomeData();
     } else if (event is CalorieItemEatingEvent) {
       final CalorieItemModel calorieItem = event.calorieItem;
       calorieItem.eatenAt = calorieItem.isEaten() ? null : DateTime.now();
 
       await calorieItemRepository.update(calorieItem);
 
-      yield* _fetchItems();
+      yield* _fetchHomeData();
       // Delete profile
     } else if (event is ProfileDeletingEvent) {
       yield* _deleteProfile(event.profile);
+    } else if (event is CaloriePreparedEvent) {
+      _preparedCaloriesValue = ExpressionExecutor.execute(event.expression);
+      yield* _fetchHomeData();
     }
   }
 
@@ -152,10 +170,10 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
 
     _activeProfile = profiles.first;
 
-    yield* _fetchItems();
+    yield* _fetchHomeData();
   }
 
-  Stream<HomeFetched> _fetchItems() async* {
+  Stream<HomeFetched> _fetchHomeData() async* {
     final ProfileModel activeProfile = _activeProfile!;
 
     final List<DayResultModel> _dayResultsList = await calorieItemRepository.fetchDaysByProfile(activeProfile, 30);
@@ -164,15 +182,19 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
     final WakingPeriodModel? currentWakingPeriod = await _wakingPeriodRepository.findActual(activeProfile);
     final DateTime startDate = DateTime(nowDateTime.year, nowDateTime.month, nowDateTime.day);
     final DateTime endDate = DateTime(nowDateTime.year, nowDateTime.month, nowDateTime.day).add(Duration(days: 1));
+
     List<CalorieItemModel> _calorieItems = [];
 
     if (currentWakingPeriod != null) {
       _calorieItems = await calorieItemRepository.fetchByWakingPeriodAndProfile(currentWakingPeriod, activeProfile);
     }
 
+    final List<CalorieItemModel> todayCalorieItems = await calorieItemRepository.fetchByCreatedAtDay(nowDateTime);
+
     yield HomeFetched(
       nowDateTime: DateTime.now(),
-      calorieItems: _calorieItems,
+      periodCalorieItems: _calorieItems,
+      todayCalorieItems: todayCalorieItems,
       dayResults: _dayResultsList,
       profiles: _profiles,
       wakingPeriods: wakingPeriods,
@@ -180,6 +202,7 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
       startDate: startDate,
       endDate: endDate,
       currentWakingPeriod: currentWakingPeriod,
+      preparedCaloriesValue: _preparedCaloriesValue,
     );
   }
 }

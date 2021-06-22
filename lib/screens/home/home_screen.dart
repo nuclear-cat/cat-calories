@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cat_calories/models/profile_model.dart';
 import 'package:cat_calories/models/waking_period_model.dart';
 import 'package:cat_calories/screens/home/_app_drawer.dart';
 import 'package:cat_calories/screens/home/_calorie_items_view.dart';
@@ -15,7 +14,6 @@ import 'package:cat_calories/blocs/home/home_event.dart';
 import 'package:cat_calories/blocs/home/home_state.dart';
 import 'package:cat_calories/models/calorie_item_model.dart';
 import 'package:cat_calories/ui/widgets/caclulator_widget.dart';
-import 'package:math_expressions/math_expressions.dart';
 
 import '_main_info_view.dart';
 
@@ -29,7 +27,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   List<CalorieItemModel> _calorieItems = [];
   TextEditingController _calorieItemController = TextEditingController();
-  double _calorieItemPreparedSum = 0;
   Timer? _timer;
 
   @override
@@ -42,14 +39,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     });
 
     _calorieItemController.addListener(() {
-      setState(() {
-        try {
-          Expression exp = Parser().parse(_calorieItemController.text);
-          _calorieItemPreparedSum = exp.evaluate(EvaluationType.REAL, ContextModel());
-        } catch (e) {
-          _calorieItemPreparedSum = 0;
-        }
-      });
+      BlocProvider.of<HomeBloc>(context).add(CaloriePreparedEvent(_calorieItemController.text));
     });
   }
 
@@ -70,23 +60,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     BlocProvider.of<HomeBloc>(context).add(CalorieItemListFetchingInProgressEvent());
 
-    void _createCalorieItem(
-        double value, ProfileModel profile, List<CalorieItemModel> calorieItems, WakingPeriodModel wakingPeriodModel) {
-      final int profileId = profile.id!;
+    void _createCalorieItem(List<CalorieItemModel> calorieItems, WakingPeriodModel wakingPeriod) {
 
-      final CalorieItemModel calorieItem = CalorieItemModel(
-          id: null,
-          value: value,
-          sortOrder: 0,
-          eatenAt: DateTime.now(),
-          createdAt: DateTime.now(),
-          description: null,
-          profileId: profileId,
-          wakingPeriodId: wakingPeriodModel.id!);
+      if (_calorieItemController.text.length == 0) {
+        return;
+      }
 
-      BlocProvider.of<HomeBloc>(context).add(CalorieItemListCreatingEvent(calorieItem, calorieItems, () {
-        final snackBar = SnackBar(content: Text('Item added'));
+      BlocProvider.of<HomeBloc>(context).add(CreatingCalorieItemEvent(_calorieItemController.text, wakingPeriod, calorieItems, (CalorieItemModel calorieItem) {
+        final snackBar = SnackBar(content: Text('${calorieItem.value.toStringAsFixed(2)} kcal added'));
         Navigator.of(context).pop();
+
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         _calorieItemController.text = '';
       }));
@@ -165,61 +148,52 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             child: Icon(Icons.add),
             onPressed: () {
               showModalBottomSheet<dynamic>(
+                barrierColor: Colors.black.withOpacity(0.2),
                 isScrollControlled: true,
                 context: context,
                 builder: (BuildContext context) {
-                  final double totalCaloriesNew = _calorieItemPreparedSum.toDouble() + state.getPeriodCaloriesEatenSum();
-                  return FractionallySizedBox(
-                    child: Wrap(
-                      children: <Widget>[
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.all(20.0),
-                          decoration: new BoxDecoration(
-                              color: Color(0xFFF5F5F5),
-                              borderRadius:
-                                  BorderRadius.only(topLeft: const Radius.circular(10.0), topRight: const Radius.circular(10.0))),
-                          child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: <Widget>[
-                            Text('= ${totalCaloriesNew.toStringAsFixed(2)} kCal', textAlign: TextAlign.center),
-                          ]),
-                        ),
-                        Builder(
-                          builder: (context) => Form(
-                            child: Column(
-                              children: <Widget>[
-                                Container(
-                                  color: Color(0xFFEEEEEE),
-                                  child: TextFormField(
-                                    decoration: InputDecoration(
-                                      fillColor: SuccessColor,
-                                      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                                      suffix: Text('kCal'),
-                                      prefix: Text('+'),
+                  return StatefulBuilder(builder: (BuildContext context, StateSetter stateSetter) {
+                    return FractionallySizedBox(
+                      child: Wrap(
+                        children: <Widget>[
+                          Builder(
+                            builder: (context) => Form(
+                              child: Column(
+                                children: <Widget>[
+                                  Container(
+                                    color: Color(0xFFEEEEEE),
+                                    child: TextFormField(
+                                      decoration: InputDecoration(
+                                        fillColor: SuccessColor,
+                                        contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                                        suffix: Text('kCal'),
+                                        prefix: Text('+'),
+                                      ),
+                                      validator: (value) {
+                                        // if (value.isEmpty) {
+                                        //   return 'Please enter some value';
+                                        // }
+                                        return null;
+                                      },
+                                      maxLines: 1,
+                                      controller: _calorieItemController,
                                     ),
-                                    validator: (value) {
-                                      // if (value.isEmpty) {
-                                      //   return 'Please enter some value';
-                                      // }
-                                      return null;
-                                    },
-                                    maxLines: 1,
-                                    controller: _calorieItemController,
                                   ),
-                                ),
-                                CalculatorWidget(
-                                  controller: _calorieItemController,
-                                  onPressed: () {
-                                    _createCalorieItem(
-                                        _calorieItemPreparedSum, state.activeProfile, _calorieItems, state.currentWakingPeriod!);
-                                  },
-                                ),
-                              ],
+                                  CalculatorWidget(
+                                    controller: _calorieItemController,
+                                    onPressed: () {
+                                      _createCalorieItem(_calorieItems,
+                                          state.currentWakingPeriod!);
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        )
-                      ],
-                    ),
-                  );
+                          )
+                        ],
+                      ),
+                    );
+                  });
                 },
               );
             },

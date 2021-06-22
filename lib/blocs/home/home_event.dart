@@ -8,27 +8,34 @@ class CalorieItemListFetchingInProgressEvent extends AbstractHomeEvent {}
 
 class HomeFetchedEvent extends AbstractHomeEvent {}
 
-class CalorieItemListCreatingEvent extends AbstractHomeEvent {
-  final CalorieItemModel calorieItem;
-  final List<CalorieItemModel> calorieItems;
-  final callback;
 
-  CalorieItemListCreatingEvent(this.calorieItem, this.calorieItems, this.callback);
+class CreatingCalorieItemEvent extends AbstractHomeEvent {
+  String expression;
+  List<CalorieItemModel> calorieItems;
+  WakingPeriodModel wakingPeriod;
+  final void Function(CalorieItemModel) callback;
+
+  CreatingCalorieItemEvent(
+    this.expression,
+    this.wakingPeriod,
+    this.calorieItems,
+    this.callback,
+  );
 }
 
-class ProfileChangingEvent extends AbstractHomeEvent {
+class ChangingProfileEvent extends AbstractHomeEvent {
   final ProfileModel profile;
   final dynamic callback;
 
-  ProfileChangingEvent(this.profile, this.callback);
+  ChangingProfileEvent(this.profile, this.callback);
 }
 
-class CalorieItemRemovingEvent extends AbstractHomeEvent {
+class RemovingCalorieItemEvent extends AbstractHomeEvent {
   final CalorieItemModel calorieItem;
   final List<CalorieItemModel> calorieItems;
   final callback;
 
-  CalorieItemRemovingEvent(this.calorieItem, this.calorieItems, this.callback);
+  RemovingCalorieItemEvent(this.calorieItem, this.calorieItems, this.callback);
 }
 
 class CalorieItemEatingEvent extends AbstractHomeEvent {
@@ -100,4 +107,10 @@ class RemovingCaloriesByCreatedAtDayEvent extends AbstractHomeEvent {
   final ProfileModel profile;
 
   RemovingCaloriesByCreatedAtDayEvent(this.date, this.profile);
+}
+
+class CaloriePreparedEvent extends AbstractHomeEvent {
+  final String expression;
+
+  CaloriePreparedEvent(this.expression);
 }

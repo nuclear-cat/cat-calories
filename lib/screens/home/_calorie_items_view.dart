@@ -18,7 +18,7 @@ class CalorieItemsView extends StatefulWidget {
 
 class _CalorieItemsViewState extends State<CalorieItemsView> {
   void _removeCalorieItem(CalorieItemModel calorieItem, List<CalorieItemModel> calorieItems) {
-    BlocProvider.of<HomeBloc>(context).add(CalorieItemRemovingEvent(calorieItem, calorieItems, () {
+    BlocProvider.of<HomeBloc>(context).add(RemovingCalorieItemEvent(calorieItem, calorieItems, () {
       final snackBar = SnackBar(content: Text('Item removed'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }));
@@ -33,7 +33,7 @@ class _CalorieItemsViewState extends State<CalorieItemsView> {
           );
         }
         if (state is HomeFetched) {
-          final _calorieItems = state.calorieItems;
+          final _calorieItems = state.periodCalorieItems;
 
           return ReorderableListView.builder(
             // padding: EdgeInsets.all(10),
