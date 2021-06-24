@@ -75,9 +75,6 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
       yield* _fetchHomeData();
     } else if (event is CreatingCalorieItemEvent) {
 
-      print('-----------------------');
-      print(_preparedCaloriesValue);
-
       final CalorieItemModel calorieItem = CalorieItemModel(
           id: null,
           value: _preparedCaloriesValue,
@@ -90,6 +87,8 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
 
       await calorieItemRepository.offsetSortOrder();
       await calorieItemRepository.insert(calorieItem);
+      _preparedCaloriesValue = 0;
+
       event.callback(calorieItem);
 
       yield* _fetchHomeData();

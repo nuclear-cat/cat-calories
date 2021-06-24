@@ -16,6 +16,7 @@ dependencies:
   intl: ^0.17.0
   shared_preferences: ^2.0.6
   math_expressions: ^2.1.1
+  flutter_simple_dependency_injection: any
 
 dev_dependencies:
   flutter_test:

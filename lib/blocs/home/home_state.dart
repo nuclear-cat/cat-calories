@@ -66,15 +66,31 @@ class HomeFetched extends AbstractHomeState {
     return DateTime(nowDateTime.year, nowDateTime.month, nowDateTime.day, 0, 0, 0);
   }
 
-  List<DayResultModel> getDaysUntilToday() {
+  DaysStat getDaysUntilToday() {
     List<DayResultModel> days = [];
+    double totalCalories = 0;
 
     this.days.forEach((DayResultModel dayResult) {
       if (getDayStart().millisecondsSinceEpoch > dayResult.createdAtDay.millisecondsSinceEpoch) {
         days.add(dayResult);
+        totalCalories += dayResult.valueSum;
       }
     });
 
-    return days;
+    return DaysStat(days, totalCalories);
+  }
+}
+
+class DaysStat {
+  final List<DayResultModel> days;
+  final double totalCalories;
+
+  DaysStat(
+    this.days,
+    this.totalCalories,
+  );
+
+  double getAvg() {
+    return totalCalories / days.length;
   }
 }

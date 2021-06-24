@@ -8,7 +8,6 @@ class CalorieItemListFetchingInProgressEvent extends AbstractHomeEvent {}
 
 class HomeFetchedEvent extends AbstractHomeEvent {}
 
-
 class CreatingCalorieItemEvent extends AbstractHomeEvent {
   String expression;
   List<CalorieItemModel> calorieItems;

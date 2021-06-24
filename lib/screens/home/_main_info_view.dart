@@ -28,10 +28,6 @@ class _MainInfoViewState extends State<MainInfoView> {
       }
 
       if (state is HomeFetched) {
-
-
-
-
         return ListView(
           padding: EdgeInsetsDirectional.all(10),
           children: [
@@ -234,7 +230,6 @@ class _MainInfoViewState extends State<MainInfoView> {
                           MaterialButton(
                             padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
                             onPressed: () {
-                              // Navigator.of(context).pop();
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => EditWakingPeriodScreen(state.currentWakingPeriod!)),
@@ -278,11 +273,16 @@ class _MainInfoViewState extends State<MainInfoView> {
                     child: Text(
                         'Today ${state.getPeriodCaloriesEatenSum().toStringAsFixed(2)} from ${state.activeProfile.caloriesLimitGoal.toStringAsFixed(2)} kcal'),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                    child: Text(
+                        'AVG: ${state.getDaysUntilToday().getAvg().toStringAsFixed(2)} kcal from ${state.getDaysUntilToday().days.length} days'),
+                  ),
                 ],
               ),
             ),
             Column(
-              children: state.getDaysUntilToday().map((DayResultModel day) {
+              children: state.getDaysUntilToday().days.map((DayResultModel day) {
                 return SizedBox(
                   width: double.infinity,
                   child: Card(

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cat_calories/models/waking_period_model.dart';
+import 'package:cat_calories/screens/create_product_screen.dart';
 import 'package:cat_calories/screens/home/_app_drawer.dart';
 import 'package:cat_calories/screens/home/_calorie_items_view.dart';
 import 'package:cat_calories/screens/home/_days_view.dart';
@@ -39,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     });
 
     _calorieItemController.addListener(() {
+      print(_calorieItemController.text);
       BlocProvider.of<HomeBloc>(context).add(CaloriePreparedEvent(_calorieItemController.text));
     });
   }
@@ -61,15 +63,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     BlocProvider.of<HomeBloc>(context).add(CalorieItemListFetchingInProgressEvent());
 
     void _createCalorieItem(List<CalorieItemModel> calorieItems, WakingPeriodModel wakingPeriod) {
+      final String expression = _calorieItemController.text;
 
-      if (_calorieItemController.text.length == 0) {
+      if (expression.length == 0) {
         return;
       }
 
-      BlocProvider.of<HomeBloc>(context).add(CreatingCalorieItemEvent(_calorieItemController.text, wakingPeriod, calorieItems, (CalorieItemModel calorieItem) {
+      BlocProvider.of<HomeBloc>(context)
+          .add(CreatingCalorieItemEvent(expression, wakingPeriod, calorieItems, (CalorieItemModel calorieItem) {
         final snackBar = SnackBar(content: Text('${calorieItem.value.toStringAsFixed(2)} kcal added'));
         Navigator.of(context).pop();
-
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         _calorieItemController.text = '';
       }));
@@ -78,12 +81,36 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return Scaffold(
       body: Scaffold(
         body: DefaultTabController(
-          length: 5,
+          length: 4,
           child: Scaffold(
             drawer: Drawer(
               child: AppDrawer(),
             ),
             appBar: AppBar(
+              actions: [
+                PopupMenuButton(
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      PopupMenuItem<String>(
+                        value: 'products',
+                        child: Text('Products'),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'create_product',
+                        child: Text('Create product'),
+                      ),
+                    ];
+                  },
+                  onSelected: (String value) {
+                    if (value == 'create_product') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CreateProductScreen()),
+                      );
+                    }
+                  },
+                ),
+              ],
               bottom: TabBar(
                 isScrollable: true,
 
@@ -104,9 +131,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ),
                   Tab(
                     text: 'Days',
-                  ),
-                  Tab(
-                    text: 'Products',
                   ),
                 ],
               ),
@@ -141,7 +165,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 CalorieItemsView(),
                 WakingPeriodsView(),
                 DaysView(),
-                Center(child: Text('TODO: Products'),),
               ],
             ),
           ),
@@ -187,8 +210,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                   CalculatorWidget(
                                     controller: _calorieItemController,
                                     onPressed: () {
-                                      _createCalorieItem(_calorieItems,
-                                          state.currentWakingPeriod!);
+                                      _createCalorieItem(_calorieItems, state.currentWakingPeriod!);
                                     },
                                   ),
                                 ],
