@@ -22,6 +22,121 @@ class ProductsView extends StatefulWidget {
 class _ProductsViewState extends State<ProductsView> {
   TextEditingController productWeightController = TextEditingController();
 
+  _showBottomSheet(ProductModel product, List<CalorieItemModel> periodCalorieItems, WakingPeriodModel currentWakingPeriod) {
+    showModalBottomSheet<dynamic>(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: <Widget>[
+            ListTile(
+              title: Text('To eat'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _showToEatBottomSheet(product, periodCalorieItems, currentWakingPeriod);
+              },
+            ),
+            ListTile(
+              title: Text('Edit'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EditProductScreen(product)),
+                );
+              },
+            ),
+            ListTile(
+              title: Text('Remove'),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Remove product'),
+                      content: Text('Continue?'),
+                      actions: [
+                        MaterialButton(
+                          child: Text("Cancel"),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        MaterialButton(
+                          child: Text("Ok"),
+                          onPressed: () {
+                            BlocProvider.of<HomeBloc>(context).add(DeleteProductEvent(product));
+
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(SnackBar(content: Text('Product ${product.title} removed')));
+
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _showToEatBottomSheet(ProductModel product, List<CalorieItemModel> periodCalorieItems, WakingPeriodModel currentWakingPeriod) {
+    showModalBottomSheet<dynamic>(
+      barrierColor: Colors.black.withOpacity(0.2),
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (BuildContext context, StateSetter stateSetter) {
+          return FractionallySizedBox(
+            child: Wrap(
+              children: <Widget>[
+                Builder(
+                  builder: (context) => Form(
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          color: Color(0xFFEEEEEE),
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              fillColor: SuccessColor,
+                              contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                              suffix: Text('g'),
+                              prefix: Text('+'),
+                            ),
+                            validator: (value) {
+                              // if (value.isEmpty) {
+                              //   return 'Please enter some value';
+                              // }
+                              return null;
+                            },
+                            maxLines: 1,
+                            controller: productWeightController,
+                          ),
+                        ),
+                        CalculatorWidget(
+                          controller: productWeightController,
+                          onPressed: () {
+                            _createCalorieItem(product, periodCalorieItems, currentWakingPeriod);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          );
+        });
+      },
+    );
+  }
+
   void _createCalorieItem(ProductModel product, List<CalorieItemModel> calorieItems, WakingPeriodModel wakingPeriod) {
     final String expression = productWeightController.text;
 
@@ -56,122 +171,19 @@ class _ProductsViewState extends State<ProductsView> {
             itemBuilder: (BuildContext context, int index) {
               final ProductModel product = products[index];
 
-              return ListTile(
-                contentPadding: EdgeInsets.fromLTRB(25, 10, 25, 10),
-                key: Key(index.toString()),
-                title: Text(product.title),
-                subtitle: Text('${product.calorieContent} kcal'),
-                onTap: () {
-                  showModalBottomSheet<dynamic>(
-                    context: context,
-                    isScrollControlled: true,
-                    builder: (BuildContext context) {
-                      return Wrap(
-                        children: <Widget>[
-                          ListTile(
-                            title: Text('To eat'),
-                            onTap: () {
-                              Navigator.of(context).pop();
-
-                              showModalBottomSheet<dynamic>(
-                                barrierColor: Colors.black.withOpacity(0.2),
-                                isScrollControlled: true,
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return StatefulBuilder(builder: (BuildContext context, StateSetter stateSetter) {
-                                    return FractionallySizedBox(
-                                      child: Wrap(
-                                        children: <Widget>[
-                                          Builder(
-                                            builder: (context) => Form(
-                                              child: Column(
-                                                children: <Widget>[
-                                                  Container(
-                                                    color: Color(0xFFEEEEEE),
-                                                    child: TextFormField(
-                                                      decoration: InputDecoration(
-                                                        fillColor: SuccessColor,
-                                                        contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                                                        suffix: Text('g'),
-                                                        prefix: Text('+'),
-                                                      ),
-                                                      validator: (value) {
-                                                        // if (value.isEmpty) {
-                                                        //   return 'Please enter some value';
-                                                        // }
-                                                        return null;
-                                                      },
-                                                      maxLines: 1,
-                                                      controller: productWeightController,
-                                                    ),
-                                                  ),
-                                                  CalculatorWidget(
-                                                    controller: productWeightController,
-                                                    onPressed: () {
-                                                      _createCalorieItem(product, state.periodCalorieItems, state.currentWakingPeriod!);
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    );
-                                  });
-                                },
-                              );
-                            },
-                          ),
-                          ListTile(
-                            title: Text('Edit'),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => EditProductScreen(product)),
-                              );
-                            },
-                          ),
-                          ListTile(
-                            title: Text('Remove'),
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text('Remove product'),
-                                    content: Text('Continue?'),
-                                    actions: [
-                                      MaterialButton(
-                                        child: Text("Cancel"),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      MaterialButton(
-                                        child: Text("Ok"),
-                                        onPressed: () {
-                                          BlocProvider.of<HomeBloc>(context).add(DeleteProductEvent(product));
-
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(content: Text('Product ${product.title} removed')));
-
-                                          Navigator.of(context).pop();
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
+              return GestureDetector(
+                onDoubleTap: () {
+                  _showToEatBottomSheet(product, state.periodCalorieItems, state.currentWakingPeriod!);
                 },
+                child: ListTile(
+                  contentPadding: EdgeInsets.fromLTRB(25, 10, 25, 10),
+                  key: Key(index.toString()),
+                  title: Text(product.title),
+                  subtitle: Text('${product.calorieContent} kcal'),
+                  onTap: () {
+                    _showBottomSheet(product, state.periodCalorieItems, state.currentWakingPeriod!);
+                  },
+                ),
               );
             },
           );

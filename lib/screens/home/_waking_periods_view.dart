@@ -20,7 +20,7 @@ class _WakingPeriodsViewState extends State<WakingPeriodsView> {
   void _removeWakingPeriod(WakingPeriodModel wakingPeriod) {
     BlocProvider.of<HomeBloc>(context).add(WakingPeriodDeletingEvent(wakingPeriod));
 
-    final snackBar = SnackBar(content: Text('Item removed'));
+    final snackBar = SnackBar(content: Text('Waking period removed'));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 

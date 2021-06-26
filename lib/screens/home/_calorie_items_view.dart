@@ -19,7 +19,7 @@ class CalorieItemsView extends StatefulWidget {
 class _CalorieItemsViewState extends State<CalorieItemsView> {
   void _removeCalorieItem(CalorieItemModel calorieItem, List<CalorieItemModel> calorieItems) {
     BlocProvider.of<HomeBloc>(context).add(RemovingCalorieItemEvent(calorieItem, calorieItems, () {
-      final snackBar = SnackBar(content: Text('Item removed'));
+      final snackBar = SnackBar(content: Text('${calorieItem.value.toStringAsFixed(2)} kcal removed'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }));
   }
