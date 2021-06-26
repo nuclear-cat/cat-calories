@@ -38,7 +38,6 @@ class CreateProfileScreenState extends State<CreateProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Create profile', style: TextStyle(fontSize: 16)),
-        toolbarHeight: 45,
         actions: [
           IconButton(
             icon: Icon(

@@ -1,4 +1,4 @@
-import 'package:cat_calories/database.dart';
+import 'package:cat_calories/database/database.dart';
 import 'package:cat_calories/models/profile_model.dart';
 import 'package:cat_calories/models/waking_period_model.dart';
 

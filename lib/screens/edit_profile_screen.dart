@@ -49,7 +49,6 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit profile', style: TextStyle(fontSize: 16)),
-        toolbarHeight: 45,
         actions: [
           IconButton(
             icon: Icon(

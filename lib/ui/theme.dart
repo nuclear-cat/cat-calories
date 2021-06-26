@@ -3,6 +3,14 @@ import 'package:flutter/material.dart';
 class CustomTheme {
   static ThemeData get lightTheme {
     return ThemeData(
+      appBarTheme: AppBarTheme(
+        // backgroundColor: Colors.red,
+        toolbarTextStyle: TextStyle(fontSize: 16),
+        titleTextStyle: TextStyle(fontSize: 16),
+        textTheme: TextTheme(
+          headline6: TextStyle(fontSize: 16, color: Colors.black),
+        ),
+      ),
       cardTheme: CardTheme(
         // elevation: 0,
         shape: RoundedRectangleBorder(

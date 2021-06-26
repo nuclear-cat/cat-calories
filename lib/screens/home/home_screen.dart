@@ -5,6 +5,7 @@ import 'package:cat_calories/screens/create_product_screen.dart';
 import 'package:cat_calories/screens/home/_app_drawer.dart';
 import 'package:cat_calories/screens/home/_calorie_items_view.dart';
 import 'package:cat_calories/screens/home/_days_view.dart';
+import 'package:cat_calories/screens/home/_products_view.dart';
 import 'package:cat_calories/screens/home/_waking_periods_view.dart';
 import 'package:cat_calories/ui/colors.dart';
 import 'package:flutter/cupertino.dart';
@@ -81,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return Scaffold(
       body: Scaffold(
         body: DefaultTabController(
-          length: 4,
+          length: 5,
           child: Scaffold(
             drawer: Drawer(
               child: AppDrawer(),
@@ -92,12 +93,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   itemBuilder: (BuildContext context) {
                     return [
                       PopupMenuItem<String>(
-                        value: 'products',
-                        child: Text('Products'),
-                      ),
-                      PopupMenuItem<String>(
                         value: 'create_product',
-                        child: Text('Create product'),
+                        child: ListTile(title: Text('+ Create product')),
                       ),
                     ];
                   },
@@ -124,6 +121,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     text: 'Info',
                   ),
                   Tab(
+                    text: 'Products',
+                  ),
+                  Tab(
                     text: 'kCal',
                   ),
                   Tab(
@@ -143,7 +143,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       return Text(
                         '${state.getPeriodCaloriesEatenSum().round()} / ${state.currentWakingPeriod!.caloriesLimitGoal} kCal',
                         style: TextStyle(
-                          fontSize: 16,
                           color: (state.getPeriodCaloriesEatenSum() > state.currentWakingPeriod!.caloriesLimitGoal
                               ? DangerColor
                               : SuccessColor),
@@ -151,17 +150,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       );
                     }
 
-                    return Text('For current period: ${state.getPeriodCaloriesEatenSum().round()} kCal',
-                        style: TextStyle(fontSize: 16));
+                    return Text('For current period: ${state.getPeriodCaloriesEatenSum().round()} kCal',);
                   }
 
-                  return Text('...', style: TextStyle(fontSize: 16));
+                  return Text('...');
                 },
               ),
             ),
             body: TabBarView(
               children: [
                 MainInfoView(),
+                ProductsView(),
                 CalorieItemsView(),
                 WakingPeriodsView(),
                 DaysView(),

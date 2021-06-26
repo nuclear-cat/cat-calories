@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:cat_calories/database/migration_executor.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -25,8 +26,12 @@ class DBProvider {
     Directory documentsDir = await getApplicationDocumentsDirectory();
     String path = join(documentsDir.path, 'app.db');
 
-    return await openDatabase(path, version: 1, onOpen: (db) async {}, onCreate: (Database db, int version) async {
-      await db.execute('''
+    return await openDatabase(
+      path,
+      version: 2,
+      onOpen: (db) async {},
+      onCreate: (Database db, int version) async {
+        await db.execute('''
 				CREATE TABLE profiles(
 					id INTEGER PRIMARY KEY NOT NULL,
 					name TEXT,
@@ -37,7 +42,7 @@ class DBProvider {
 				)
 			''');
 
-      await db.execute('''
+        await db.execute('''
 				CREATE TABLE waking_periods(
 					id INTEGER PRIMARY KEY NOT NULL,
 					description TEXT NULL,
@@ -53,7 +58,7 @@ class DBProvider {
 				)
 			''');
 
-      await db.execute('''
+        await db.execute('''
 				CREATE TABLE calorie_items(
 					id INTEGER PRIMARY KEY NOT NULL,
 					value REAL,
@@ -70,10 +75,13 @@ class DBProvider {
 				)
 			''');
 
-      await db.execute('''
+        await db.execute('''
 				CREATE INDEX calorie_items_created_at_day_idx ON calorie_items(created_at_day)
 			''');
-    });
+      },
+      onUpgrade: MigrationExecutor().upgrade,
+      onDowngrade: MigrationExecutor().downgrade,
+    );
   }
 
   Future<Database> getDatabase() async {

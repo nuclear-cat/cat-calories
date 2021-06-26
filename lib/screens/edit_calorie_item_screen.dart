@@ -45,14 +45,12 @@ class EditCalorieItemScreenState extends State<EditCalorieItemScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit calorie item', style: TextStyle(fontSize: 16)),
-        toolbarHeight: 45,
         actions: [
           IconButton(
             icon: Icon(
               Icons.check,
             ),
             onPressed: () {
-
               if (!_formKey.currentState!.validate()) {
                 return;
               }
@@ -69,10 +67,8 @@ class EditCalorieItemScreenState extends State<EditCalorieItemScreen> {
         ],
       ),
       body: BlocBuilder<HomeBloc, AbstractHomeState>(builder: (BuildContext context, state) {
-
         return Form(
           key: _formKey,
-
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: Wrap(
@@ -83,7 +79,7 @@ class EditCalorieItemScreenState extends State<EditCalorieItemScreen> {
                   autofocus: true,
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter kCal value';
+                      return 'Please enter kcal value';
                     }
 
                     return null;
@@ -95,32 +91,6 @@ class EditCalorieItemScreenState extends State<EditCalorieItemScreen> {
                 ),
               ],
             ),
-          ),
-        );
-
-
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          child: Wrap(
-            children: <Widget>[
-              TextFormField(
-                controller: _valueController,
-                keyboardType: TextInputType.number,
-                autofocus: true,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter kCal value';
-                  }
-
-                  return null;
-                },
-              ),
-              TextFormField(
-                textCapitalization: TextCapitalization.sentences,
-                controller: _descriptionController,
-              ),
-            ],
           ),
         );
       }),

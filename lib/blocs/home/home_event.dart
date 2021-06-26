@@ -1,4 +1,5 @@
 import 'package:cat_calories/models/calorie_item_model.dart';
+import 'package:cat_calories/models/product_model.dart';
 import 'package:cat_calories/models/profile_model.dart';
 import 'package:cat_calories/models/waking_period_model.dart';
 
@@ -15,6 +16,22 @@ class CreatingCalorieItemEvent extends AbstractHomeEvent {
   final void Function(CalorieItemModel) callback;
 
   CreatingCalorieItemEvent(
+    this.expression,
+    this.wakingPeriod,
+    this.calorieItems,
+    this.callback,
+  );
+}
+
+class EatProductEvent extends AbstractHomeEvent {
+  ProductModel product;
+  String expression;
+  List<CalorieItemModel> calorieItems;
+  WakingPeriodModel wakingPeriod;
+  final void Function(CalorieItemModel) callback;
+
+  EatProductEvent(
+    this.product,
     this.expression,
     this.wakingPeriod,
     this.calorieItems,
@@ -112,4 +129,36 @@ class CaloriePreparedEvent extends AbstractHomeEvent {
   final String expression;
 
   CaloriePreparedEvent(this.expression);
+}
+
+class CreateProductEvent extends AbstractHomeEvent {
+  final String title;
+  final String? description;
+  final int? barcode;
+  final double? calorieContent;
+  final double? proteins;
+  final double? fats;
+  final double? carbohydrates;
+
+  CreateProductEvent({
+    required this.title,
+    required this.description,
+    required this.barcode,
+    required this.calorieContent,
+    required this.proteins,
+    required this.fats,
+    required this.carbohydrates,
+  });
+}
+
+class UpdateProductEvent extends AbstractHomeEvent {
+  final ProductModel product;
+
+  UpdateProductEvent(this.product);
+}
+
+class DeleteProductEvent extends AbstractHomeEvent {
+  final ProductModel product;
+
+  DeleteProductEvent(this.product);
 }

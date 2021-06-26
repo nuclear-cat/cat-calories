@@ -1,3 +1,5 @@
+import 'package:cat_calories/module_container.dart';
+import 'package:cat_calories/repositories/product_repository.dart';
 import 'package:cat_calories/repositories/profile_repository.dart';
 import 'package:cat_calories/repositories/waking_period_repository.dart';
 import 'package:cat_calories/ui/theme.dart';
@@ -7,8 +9,10 @@ import 'package:cat_calories/repositories/calorie_item_repository.dart';
 import 'package:cat_calories/screens/home/home_screen.dart';
 import 'package:cat_calories/simple_bloc_observer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_simple_dependency_injection/injector.dart';
 
 void main() {
+  final injector = ModuleContainer().initialise(Injector());
   Bloc.observer = SimpleBlocObserver();
   runApp(App());
 }
@@ -19,8 +23,12 @@ class App extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) =>
-              HomeBloc(CalorieItemRepository(), ProfileRepository(), WakingPeriodRepository()),
+          create: (context) => HomeBloc(
+            productRepository: ProductRepository(),
+            calorieItemRepository: CalorieItemRepository(),
+            profileRepository: ProfileRepository(),
+            wakingPeriodRepository: WakingPeriodRepository(),
+          ),
         ),
       ],
       child: MaterialApp(

@@ -54,7 +54,6 @@ class EditWakingPeriodScreenState extends State<EditWakingPeriodScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit waking period', style: TextStyle(fontSize: 16)),
-        toolbarHeight: 45,
         actions: [
           IconButton(
             icon: Icon(

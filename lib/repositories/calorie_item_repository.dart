@@ -1,4 +1,4 @@
-import 'package:cat_calories/database.dart';
+import 'package:cat_calories/database/database.dart';
 import 'package:cat_calories/models/calorie_item_model.dart';
 import 'package:cat_calories/models/day_result.dart';
 import 'package:cat_calories/models/profile_model.dart';
@@ -6,14 +6,17 @@ import 'package:cat_calories/models/waking_period_model.dart';
 import 'package:sqflite/sqflite.dart';
 
 class CalorieItemRepository {
+
+   static const String tableName = 'calorie_items';
+
   Future<List<CalorieItemModel>> findAll() async {
-    final calorieItemsResult = await DBProvider.db.query('calorie_items', orderBy: 'sort_order ASC');
+    final calorieItemsResult = await DBProvider.db.query(tableName, orderBy: 'sort_order ASC');
 
     return calorieItemsResult.map((element) => CalorieItemModel.fromJson(element)).toList();
   }
 
   Future<List<CalorieItemModel>> fetchAllByProfile(ProfileModel profile) async {
-    final calorieItemsResult = await DBProvider.db.query('calorie_items', where: 'profile_id = ?', whereArgs: [profile.id]);
+    final calorieItemsResult = await DBProvider.db.query(tableName, where: 'profile_id = ?', whereArgs: [profile.id]);
 
     return calorieItemsResult.map((element) => CalorieItemModel.fromJson(element)).toList();
   }
@@ -34,7 +37,7 @@ class CalorieItemRepository {
     final int dateTimestamp = (DateTime(createdAtDay.year, createdAtDay.month, createdAtDay.day).millisecondsSinceEpoch / 100000).round().toInt();
 
     await DBProvider.db.delete(
-      'calorie_items',
+      tableName,
       where: 'created_at_day = ? AND profile_id = ?',
       whereArgs: [dateTimestamp, profile.id],
     );
@@ -42,7 +45,7 @@ class CalorieItemRepository {
 
   Future<List<CalorieItemModel>> fetchByWakingPeriodAndProfile(WakingPeriodModel wakingPeriod, ProfileModel profile) async {
     final calorieItemsResult = await DBProvider.db.query(
-      'calorie_items',
+      tableName,
       orderBy: 'sort_order ASC',
       where: 'waking_period_id = ? AND profile_id = ?',
       whereArgs: [
@@ -55,7 +58,7 @@ class CalorieItemRepository {
   }
 
   Future<CalorieItemModel?> find(int id) async {
-    final calorieItemsResult = await DBProvider.db.query('calorie_items', where: 'id = ?', whereArgs: [id], limit: 1);
+    final calorieItemsResult = await DBProvider.db.query(tableName, where: 'id = ?', whereArgs: [id], limit: 1);
 
     if (calorieItemsResult.length > 0) {
       return CalorieItemModel.fromJson(calorieItemsResult[0]);
@@ -70,7 +73,7 @@ class CalorieItemRepository {
           SUM(ci.value) as value_sum, 
           ci.created_at_day
       
-      FROM calorie_items ci
+      FROM ${tableName} ci
       WHERE ci.profile_id = ?
 
       GROUP BY created_at_day
@@ -89,7 +92,7 @@ class CalorieItemRepository {
   }
 
   Future<void> offsetSortOrder() async {
-    await DBProvider.db.rawQuery('UPDATE calorie_items SET sort_order = sort_order + 1');
+    await DBProvider.db.rawQuery('UPDATE $tableName SET sort_order = sort_order + 1');
   }
 
   Future<CalorieItemModel> update(CalorieItemModel calorieItem) async {
