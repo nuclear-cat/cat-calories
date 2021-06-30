@@ -1,13 +1,14 @@
 import 'package:cat_calories/database/database.dart';
 import 'package:cat_calories/models/product_model.dart';
 import 'package:cat_calories/models/profile_model.dart';
+import 'package:sqflite/sqflite.dart';
 
 class ProductRepository {
 
   static const String tableName = 'products';
 
   Future<List<ProductModel>> fetchAll() async {
-    final productsResult = await DBProvider.db.query(tableName);
+    final productsResult = await DBProvider.db.query(tableName, orderBy: 'sort_order ASC');
 
     return productsResult
         .map((element) => ProductModel.fromJson(element))
@@ -38,5 +39,20 @@ class ProductRepository {
         where: 'id = ?', whereArgs: [product.id]);
 
     return product;
+  }
+
+  Future resort(List<ProductModel> products) async {
+    Batch batch = await DBProvider.db.batch();
+
+    for (var i = 0; i < products.length; i++) {
+      final ProductModel calorieItem = products[i];
+      batch.update(tableName, {'sort_order': i}, where: 'id = ?', whereArgs: [calorieItem.id]);
+    }
+
+    return await batch.commit();
+  }
+
+  Future<void> offsetSortOrder() async {
+    await DBProvider.db.rawQuery('UPDATE $tableName SET sort_order = sort_order + 1');
   }
 }

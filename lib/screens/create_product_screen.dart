@@ -1,13 +1,16 @@
 import 'package:cat_calories/blocs/home/home_bloc.dart';
 import 'package:cat_calories/blocs/home/home_event.dart';
 import 'package:cat_calories/blocs/home/home_state.dart';
+import 'package:cat_calories/models/profile_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '_edit_product_form.dart';
 
 class CreateProductScreen extends StatefulWidget {
-  CreateProductScreen();
+  final ProfileModel profile;
+
+  CreateProductScreen(this.profile);
 
   @override
   CreateProductScreenState createState() => CreateProductScreenState();

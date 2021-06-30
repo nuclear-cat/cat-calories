@@ -64,7 +64,10 @@ class _MainInfoViewState extends State<MainInfoView> {
 
                               BlocProvider.of<HomeBloc>(context).add(WakingPeriodCreatingEvent(wakingPeriod));
                             },
-                            child: const Text('Start waking period'),
+                            child: Text('Start waking period', style: TextStyle(
+                              color: Theme.of(context).buttonColor,
+                              fontWeight: FontWeight.w600,
+                            ),),
                           ),
                         ],
                       ),
@@ -276,7 +279,7 @@ class _MainInfoViewState extends State<MainInfoView> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                     child: Text(
-                        'AVG: ${state.getDaysUntilToday().getAvg().toStringAsFixed(2)} kcal from ${state.getDaysUntilToday().days.length} days'),
+                        'AVG: ${state.getDaysUntilToday().getAvg().toStringAsFixed(2)} kcal of ${state.getDaysUntilToday().days.length} days'),
                   ),
                 ],
               ),

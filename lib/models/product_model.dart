@@ -11,6 +11,7 @@ class ProductModel {
   double? proteins;
   double? fats;
   double? carbohydrates;
+  int sortOrder;
 
   ProductModel({
     required this.id,
@@ -25,6 +26,7 @@ class ProductModel {
     required this.proteins,
     required this.fats,
     required this.carbohydrates,
+    required this.sortOrder,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
@@ -40,6 +42,7 @@ class ProductModel {
         proteins: json['proteins'],
         fats: json['fats'],
         carbohydrates: json['carbohydrates'],
+        sortOrder: json['sort_order'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -55,5 +58,6 @@ class ProductModel {
         'proteins': proteins,
         'fats': fats,
         'carbohydrates': carbohydrates,
+        'sort_order': sortOrder,
       };
 }

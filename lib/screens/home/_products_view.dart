@@ -22,6 +22,9 @@ class ProductsView extends StatefulWidget {
 class _ProductsViewState extends State<ProductsView> {
   TextEditingController productWeightController = TextEditingController();
 
+  List<ProductModel> _products = [];
+
+
   _showBottomSheet(ProductModel product, List<CalorieItemModel> periodCalorieItems, WakingPeriodModel currentWakingPeriod) {
     showModalBottomSheet<dynamic>(
       context: context,
@@ -164,27 +167,45 @@ class _ProductsViewState extends State<ProductsView> {
         }
 
         if (state is HomeFetched) {
-          final List<ProductModel> products = state.products;
+          _products = state.products;
 
-          return ListView.builder(
-            itemCount: products.length,
+          return ReorderableListView.builder(
+            itemCount: _products.length,
             itemBuilder: (BuildContext context, int index) {
-              final ProductModel product = products[index];
+              final ProductModel product = _products[index];
 
               return GestureDetector(
+                key: Key(index.toString()),
+
                 onDoubleTap: () {
                   _showToEatBottomSheet(product, state.periodCalorieItems, state.currentWakingPeriod!);
                 },
                 child: ListTile(
+                  trailing: ReorderableDragStartListener(
+                    index: index,
+                    child: const Icon(Icons.drag_handle),
+                  ),
                   contentPadding: EdgeInsets.fromLTRB(25, 10, 25, 10),
-                  key: Key(index.toString()),
                   title: Text(product.title),
-                  subtitle: Text('${product.calorieContent} kcal'),
+                  subtitle: product.description != null ? Text(product.description!) : null,
                   onTap: () {
                     _showBottomSheet(product, state.periodCalorieItems, state.currentWakingPeriod!);
                   },
+
                 ),
               );
+            },
+            onReorder: (int oldIndex, int newIndex) {
+
+              setState(() {
+                if (oldIndex < newIndex) {
+                  newIndex -= 1;
+                }
+                final item = _products.removeAt(oldIndex);
+                _products.insert(newIndex, item);
+                BlocProvider.of<HomeBloc>(context).add(ProductsResortEvent(_products));
+              });
+
             },
           );
         }

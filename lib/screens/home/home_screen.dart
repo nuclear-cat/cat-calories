@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cat_calories/models/waking_period_model.dart';
+import 'package:cat_calories/screens/calories/calories_page.dart';
 import 'package:cat_calories/screens/create_product_screen.dart';
 import 'package:cat_calories/screens/home/_app_drawer.dart';
 import 'package:cat_calories/screens/home/_calorie_items_view.dart';
@@ -89,24 +90,44 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
             appBar: AppBar(
               actions: [
-                PopupMenuButton(
-                  itemBuilder: (BuildContext context) {
-                    return [
-                      PopupMenuItem<String>(
-                        value: 'create_product',
-                        child: ListTile(title: Text('+ Create product')),
-                      ),
-                    ];
-                  },
-                  onSelected: (String value) {
-                    if (value == 'create_product') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => CreateProductScreen()),
-                      );
-                    }
-                  },
-                ),
+                BlocBuilder<HomeBloc, AbstractHomeState>(builder: (context, state) {
+                  if (state is HomeFetched) {
+                    return PopupMenuButton(
+                      itemBuilder: (BuildContext context) {
+                        return [
+                          PopupMenuItem<String>(
+                            value: 'calories',
+                            child: ListTile(title: Text('Calories')),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'create_product',
+                            child: ListTile(title: Text('Create product')),
+                          ),
+                        ];
+                      },
+                      onSelected: (String value) {
+                        if (value == 'create_product') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => CreateProductScreen(state.activeProfile)),
+                          );
+                        } else if (value == 'calories') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => CaloriesPage(state.activeProfile)),
+                          );
+                        }
+                      },
+                    );
+                  }
+
+                  return PopupMenuButton(
+                    enabled: false,
+                    itemBuilder: (BuildContext context) {
+                      return [];
+                    },
+                  );
+                }),
               ],
               bottom: TabBar(
                 isScrollable: true,
@@ -150,7 +171,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       );
                     }
 
-                    return Text('For current period: ${state.getPeriodCaloriesEatenSum().round()} kCal',);
+                    return Text(
+                      'For current period: ${state.getPeriodCaloriesEatenSum().round()} kCal',
+                    );
                   }
 
                   return Text('...');

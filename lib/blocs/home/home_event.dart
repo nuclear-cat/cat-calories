@@ -39,11 +39,11 @@ class EatProductEvent extends AbstractHomeEvent {
   );
 }
 
-class ChangingProfileEvent extends AbstractHomeEvent {
+class ChangeProfileEvent extends AbstractHomeEvent {
   final ProfileModel profile;
   final dynamic callback;
 
-  ChangingProfileEvent(this.profile, this.callback);
+  ChangeProfileEvent(this.profile, this.callback);
 }
 
 class RemovingCalorieItemEvent extends AbstractHomeEvent {
@@ -161,4 +161,10 @@ class DeleteProductEvent extends AbstractHomeEvent {
   final ProductModel product;
 
   DeleteProductEvent(this.product);
+}
+
+class ProductsResortEvent extends AbstractHomeEvent {
+  ProductsResortEvent(this.products);
+
+  final List<ProductModel> products;
 }

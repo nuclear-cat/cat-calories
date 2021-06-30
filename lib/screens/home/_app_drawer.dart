@@ -48,7 +48,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     ),
                     title: Text(profile.name),
                     onTap: () {
-                      BlocProvider.of<HomeBloc>(context).add(ChangingProfileEvent(profile, {}));
+                      BlocProvider.of<HomeBloc>(context).add(ChangeProfileEvent(profile, {}));
                     },
                   );
                 }).toList(),

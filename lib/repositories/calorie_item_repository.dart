@@ -6,35 +6,53 @@ import 'package:cat_calories/models/waking_period_model.dart';
 import 'package:sqflite/sqflite.dart';
 
 class CalorieItemRepository {
-
-   static const String tableName = 'calorie_items';
+  static const String tableName = 'calorie_items';
 
   Future<List<CalorieItemModel>> findAll() async {
-    final calorieItemsResult = await DBProvider.db.query(tableName, orderBy: 'sort_order ASC');
+    final calorieItemsResult =
+        await DBProvider.db.query(tableName, orderBy: 'sort_order ASC');
 
-    return calorieItemsResult.map((element) => CalorieItemModel.fromJson(element)).toList();
+    return calorieItemsResult
+        .map((element) => CalorieItemModel.fromJson(element))
+        .toList();
   }
 
-  Future<List<CalorieItemModel>> fetchAllByProfile(ProfileModel profile) async {
-    final calorieItemsResult = await DBProvider.db.query(tableName, where: 'profile_id = ?', whereArgs: [profile.id]);
+  Future<List<CalorieItemModel>> fetchAllByProfile(ProfileModel profile,
+      {String orderBy = 'id ASC', int? limit, int? offset}) async {
+    final calorieItemsResult = await DBProvider.db.query(tableName,
+        where: 'profile_id = ?', whereArgs: [profile.id], orderBy: orderBy, limit: limit, offset: offset);
 
-    return calorieItemsResult.map((element) => CalorieItemModel.fromJson(element)).toList();
+    return calorieItemsResult
+        .map((element) => CalorieItemModel.fromJson(element))
+        .toList();
   }
 
-  Future<List<CalorieItemModel>> fetchByCreatedAtDay(DateTime createdAtDay) async {
+  Future<List<CalorieItemModel>> fetchByCreatedAtDay(
+      DateTime createdAtDay) async {
     final calorieItemsResult = await DBProvider.db.query(
       'calorie_items',
       orderBy: 'sort_order ASC',
       where: 'created_at_day >= ?',
-      whereArgs: [DateTime(createdAtDay.year, createdAtDay.month, createdAtDay.day).millisecondsSinceEpoch / 100000],
+      whereArgs: [
+        DateTime(createdAtDay.year, createdAtDay.month, createdAtDay.day)
+                .millisecondsSinceEpoch /
+            100000
+      ],
     );
 
-    return calorieItemsResult.map((element) => CalorieItemModel.fromJson(element)).toList();
+    return calorieItemsResult
+        .map((element) => CalorieItemModel.fromJson(element))
+        .toList();
   }
 
-  Future<void> deleteByCreatedAtDay(DateTime createdAtDay, ProfileModel profile) async {
-
-    final int dateTimestamp = (DateTime(createdAtDay.year, createdAtDay.month, createdAtDay.day).millisecondsSinceEpoch / 100000).round().toInt();
+  Future<void> deleteByCreatedAtDay(
+      DateTime createdAtDay, ProfileModel profile) async {
+    final int dateTimestamp =
+        (DateTime(createdAtDay.year, createdAtDay.month, createdAtDay.day)
+                    .millisecondsSinceEpoch /
+                100000)
+            .round()
+            .toInt();
 
     await DBProvider.db.delete(
       tableName,
@@ -43,7 +61,8 @@ class CalorieItemRepository {
     );
   }
 
-  Future<List<CalorieItemModel>> fetchByWakingPeriodAndProfile(WakingPeriodModel wakingPeriod, ProfileModel profile) async {
+  Future<List<CalorieItemModel>> fetchByWakingPeriodAndProfile(
+      WakingPeriodModel wakingPeriod, ProfileModel profile) async {
     final calorieItemsResult = await DBProvider.db.query(
       tableName,
       orderBy: 'sort_order ASC',
@@ -54,11 +73,14 @@ class CalorieItemRepository {
       ],
     );
 
-    return calorieItemsResult.map((element) => CalorieItemModel.fromJson(element)).toList();
+    return calorieItemsResult
+        .map((element) => CalorieItemModel.fromJson(element))
+        .toList();
   }
 
   Future<CalorieItemModel?> find(int id) async {
-    final calorieItemsResult = await DBProvider.db.query(tableName, where: 'id = ?', whereArgs: [id], limit: 1);
+    final calorieItemsResult = await DBProvider.db
+        .query(tableName, where: 'id = ?', whereArgs: [id], limit: 1);
 
     if (calorieItemsResult.length > 0) {
       return CalorieItemModel.fromJson(calorieItemsResult[0]);
@@ -67,7 +89,8 @@ class CalorieItemRepository {
     return null;
   }
 
-  Future<List<DayResultModel>> fetchDaysByProfile(ProfileModel profile, int limit) async {
+  Future<List<DayResultModel>> fetchDaysByProfile(
+      ProfileModel profile, int limit) async {
     final result = await DBProvider.db.rawQuery('''
       SELECT 
           SUM(ci.value) as value_sum, 
@@ -86,23 +109,27 @@ class CalorieItemRepository {
   }
 
   Future<CalorieItemModel> insert(CalorieItemModel calorieItem) async {
-    calorieItem.id = await DBProvider.db.insert('calorie_items', calorieItem.toJson());
+    calorieItem.id =
+        await DBProvider.db.insert('calorie_items', calorieItem.toJson());
 
     return calorieItem;
   }
 
   Future<void> offsetSortOrder() async {
-    await DBProvider.db.rawQuery('UPDATE $tableName SET sort_order = sort_order + 1');
+    await DBProvider.db
+        .rawQuery('UPDATE $tableName SET sort_order = sort_order + 1');
   }
 
   Future<CalorieItemModel> update(CalorieItemModel calorieItem) async {
-    await DBProvider.db.update('calorie_items', calorieItem.toJson(), where: 'id = ?', whereArgs: [calorieItem.id]);
+    await DBProvider.db.update('calorie_items', calorieItem.toJson(),
+        where: 'id = ?', whereArgs: [calorieItem.id]);
 
     return calorieItem;
   }
 
   Future<int> delete(CalorieItemModel calorieItem) async {
-    return await DBProvider.db.delete('calorie_items', where: 'id = ?', whereArgs: [calorieItem.id]);
+    return await DBProvider.db
+        .delete('calorie_items', where: 'id = ?', whereArgs: [calorieItem.id]);
   }
 
   Future<int> deleteAll() async {
@@ -114,7 +141,8 @@ class CalorieItemRepository {
 
     for (var i = 0; i < items.length; i++) {
       final CalorieItemModel calorieItem = items[i];
-      batch.update('calorie_items', {'sort_order': i}, where: 'id = ?', whereArgs: [calorieItem.id]);
+      batch.update('calorie_items', {'sort_order': i},
+          where: 'id = ?', whereArgs: [calorieItem.id]);
     }
 
     return await batch.commit();
