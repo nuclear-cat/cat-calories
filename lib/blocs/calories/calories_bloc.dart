@@ -22,13 +22,17 @@ class CaloriesBloc extends Bloc<AbstractCaloriesEvent, AbstractCaloriesState> {
     }
 
     if (event is CaloriesFetchProgressEvent) {
-      yield* _fetchData();
+      yield* _fetchData(event.invertSortOrder, event.dayStart);
     }
   }
 
-  Stream<CaloriesFetchedState> _fetchData() async* {
-    final calorieItems = await calorieItemRepository
-        .fetchAllByProfile(_activeProfile!, orderBy: 'id DESC', limit: 50);
+  Stream<CaloriesFetchedState> _fetchData(
+      bool invertSortOrder, DateTime dayStart) async* {
+    final calorieItems = await calorieItemRepository.fetchAllByProfileAndDay(
+        _activeProfile!,
+        orderBy: 'id ' + (invertSortOrder ? 'DESC' : 'ASC'),
+        limit: 50,
+        dayStart: dayStart);
 
     yield CaloriesFetchedState(calorieItems);
   }

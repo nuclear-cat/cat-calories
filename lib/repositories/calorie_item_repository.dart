@@ -20,7 +20,36 @@ class CalorieItemRepository {
   Future<List<CalorieItemModel>> fetchAllByProfile(ProfileModel profile,
       {String orderBy = 'id ASC', int? limit, int? offset}) async {
     final calorieItemsResult = await DBProvider.db.query(tableName,
-        where: 'profile_id = ?', whereArgs: [profile.id], orderBy: orderBy, limit: limit, offset: offset);
+        where: 'profile_id = ?',
+        whereArgs: [profile.id],
+        orderBy: orderBy,
+        limit: limit,
+        offset: offset);
+
+    return calorieItemsResult
+        .map((element) => CalorieItemModel.fromJson(element))
+        .toList();
+  }
+
+  Future<List<CalorieItemModel>> fetchAllByProfileAndDay(ProfileModel profile,
+      {String orderBy = 'id ASC',
+      int? limit,
+      int? offset,
+      required DateTime dayStart}) async {
+    final calorieItemsResult = await DBProvider.db.query(tableName,
+        where: 'profile_id = ? AND created_at_day >= ? AND created_at_day <= ?',
+        whereArgs: [
+          profile.id,
+          DateTime(dayStart.year, dayStart.month, dayStart.day, 0, 0, 0)
+                  .millisecondsSinceEpoch /
+              100000,
+          DateTime(dayStart.year, dayStart.month, dayStart.day, 23, 59, 59)
+                  .millisecondsSinceEpoch /
+              100000,
+        ],
+        orderBy: orderBy,
+        limit: limit,
+        offset: offset);
 
     return calorieItemsResult
         .map((element) => CalorieItemModel.fromJson(element))

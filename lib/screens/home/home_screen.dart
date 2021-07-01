@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cat_calories/models/waking_period_model.dart';
-import 'package:cat_calories/screens/calories/calories_page.dart';
+import 'package:cat_calories/screens/calories/day_calories_page.dart';
 import 'package:cat_calories/screens/create_product_screen.dart';
 import 'package:cat_calories/screens/home/_app_drawer.dart';
 import 'package:cat_calories/screens/home/_calorie_items_view.dart';
@@ -27,7 +27,8 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   List<CalorieItemModel> _calorieItems = [];
   TextEditingController _calorieItemController = TextEditingController();
   Timer? _timer;
@@ -43,7 +44,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
     _calorieItemController.addListener(() {
       print(_calorieItemController.text);
-      BlocProvider.of<HomeBloc>(context).add(CaloriePreparedEvent(_calorieItemController.text));
+      BlocProvider.of<HomeBloc>(context)
+          .add(CaloriePreparedEvent(_calorieItemController.text));
     });
   }
 
@@ -62,18 +64,23 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<HomeBloc>(context).add(CalorieItemListFetchingInProgressEvent());
+    BlocProvider.of<HomeBloc>(context)
+        .add(CalorieItemListFetchingInProgressEvent());
 
-    void _createCalorieItem(List<CalorieItemModel> calorieItems, WakingPeriodModel wakingPeriod) {
+    void _createCalorieItem(
+        List<CalorieItemModel> calorieItems, WakingPeriodModel wakingPeriod) {
       final String expression = _calorieItemController.text;
 
       if (expression.length == 0) {
         return;
       }
 
-      BlocProvider.of<HomeBloc>(context)
-          .add(CreatingCalorieItemEvent(expression, wakingPeriod, calorieItems, (CalorieItemModel calorieItem) {
-        final snackBar = SnackBar(content: Text('${calorieItem.value.toStringAsFixed(2)} kcal added'));
+      BlocProvider.of<HomeBloc>(context).add(
+          CreatingCalorieItemEvent(expression, wakingPeriod, calorieItems,
+              (CalorieItemModel calorieItem) {
+        final snackBar = SnackBar(
+            content:
+                Text('${calorieItem.value.toStringAsFixed(2)} kcal added'));
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         _calorieItemController.text = '';
@@ -90,7 +97,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
             appBar: AppBar(
               actions: [
-                BlocBuilder<HomeBloc, AbstractHomeState>(builder: (context, state) {
+                BlocBuilder<HomeBloc, AbstractHomeState>(
+                    builder: (context, state) {
                   if (state is HomeFetched) {
                     return PopupMenuButton(
                       itemBuilder: (BuildContext context) {
@@ -109,12 +117,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         if (value == 'create_product') {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => CreateProductScreen(state.activeProfile)),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    CreateProductScreen(state.activeProfile)),
                           );
                         } else if (value == 'calories') {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => CaloriesPage(state.activeProfile)),
+                            MaterialPageRoute(
+                                builder: (context) => DayCaloriesPage(
+                                    state.activeProfile, state.startDate)),
                           );
                         }
                       },
@@ -164,7 +176,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       return Text(
                         '${state.getPeriodCaloriesEatenSum().round()} / ${state.currentWakingPeriod!.caloriesLimitGoal} kCal',
                         style: TextStyle(
-                          color: (state.getPeriodCaloriesEatenSum() > state.currentWakingPeriod!.caloriesLimitGoal
+                          color: (state.getPeriodCaloriesEatenSum() >
+                                  state.currentWakingPeriod!.caloriesLimitGoal
                               ? DangerColor
                               : SuccessColor),
                         ),
@@ -192,7 +205,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
         ),
       ),
-      floatingActionButton: BlocBuilder<HomeBloc, AbstractHomeState>(builder: (context, state) {
+      floatingActionButton:
+          BlocBuilder<HomeBloc, AbstractHomeState>(builder: (context, state) {
         if (state is HomeFetched && state.currentWakingPeriod != null) {
           return FloatingActionButton(
             child: Icon(Icons.add),
@@ -202,7 +216,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 isScrollControlled: true,
                 context: context,
                 builder: (BuildContext context) {
-                  return StatefulBuilder(builder: (BuildContext context, StateSetter stateSetter) {
+                  return StatefulBuilder(
+                      builder: (BuildContext context, StateSetter stateSetter) {
                     return FractionallySizedBox(
                       child: Wrap(
                         children: <Widget>[
@@ -215,7 +230,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                     child: TextFormField(
                                       decoration: InputDecoration(
                                         fillColor: SuccessColor,
-                                        contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                                        contentPadding: EdgeInsets.symmetric(
+                                            vertical: 10.0, horizontal: 10.0),
                                         suffix: Text('kCal'),
                                         prefix: Text('+'),
                                       ),
@@ -232,7 +248,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                   CalculatorWidget(
                                     controller: _calorieItemController,
                                     onPressed: () {
-                                      _createCalorieItem(_calorieItems, state.currentWakingPeriod!);
+                                      _createCalorieItem(_calorieItems,
+                                          state.currentWakingPeriod!);
                                     },
                                   ),
                                 ],

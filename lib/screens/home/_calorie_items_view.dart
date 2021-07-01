@@ -35,8 +35,14 @@ class _CalorieItemsViewState extends State<CalorieItemsView> {
         if (state is HomeFetched) {
           final _calorieItems = state.periodCalorieItems;
 
+
+          if (_calorieItems.length == 0) {
+            return Center(
+              child: Text('No calorie items'),
+            );
+          }
+
           return ReorderableListView.builder(
-            // padding: EdgeInsets.all(10),
             itemBuilder: (context, int index) {
               final CalorieItemModel calorieItem = _calorieItems[index];
 

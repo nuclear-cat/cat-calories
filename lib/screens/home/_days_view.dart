@@ -2,6 +2,7 @@ import 'package:cat_calories/blocs/home/home_bloc.dart';
 import 'package:cat_calories/blocs/home/home_event.dart';
 import 'package:cat_calories/blocs/home/home_state.dart';
 import 'package:cat_calories/models/day_result.dart';
+import 'package:cat_calories/screens/calories/day_calories_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,10 +50,11 @@ class _DaysViewState extends State<DaysView> {
                             title: Text('Show calorie items'),
                             onTap: () {
                               Navigator.of(context).pop();
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(builder: (context) => EditWakingPeriodScreen(wakingPeriod)),
-                              // );
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => DayCaloriesPage(state.activeProfile, dayItem.createdAtDay)),
+                              );
                             },
                           ),
                           ListTile(

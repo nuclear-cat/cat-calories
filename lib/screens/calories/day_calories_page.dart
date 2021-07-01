@@ -7,36 +7,45 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'dart:math' as math;
 
-class CaloriesPage extends StatefulWidget {
+class DayCaloriesPage extends StatefulWidget {
   final ProfileModel profile;
+  final DateTime startDate;
 
-  const CaloriesPage(this.profile);
+  const DayCaloriesPage(this.profile, this.startDate);
 
   @override
-  State<StatefulWidget> createState() => _CaloriesPageState(profile);
+  State<StatefulWidget> createState() => _DayCaloriesPageState(profile, startDate);
 }
 
-class _CaloriesPageState extends State<CaloriesPage> {
+class _DayCaloriesPageState extends State<DayCaloriesPage> {
   final ProfileModel profile;
+  final DateTime startDate;
 
-  bool invertSorting = false;
+  bool _invertSorting = false;
 
-  _CaloriesPageState(this.profile);
+  _DayCaloriesPageState(this.profile, this.startDate);
 
   @override
   Widget build(BuildContext context) {
     BlocProvider.of<CaloriesBloc>(context)
-        .add(CaloriesFetchProgressEvent(profile));
+        .add(CaloriesFetchProgressEvent(profile, startDate, _invertSorting));
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Calories'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.sort),
+            icon: Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.rotationX(_invertSorting ? math.pi : 0),
+                child: Icon(Icons.sort)
+            ),
             onPressed: () {
-              invertSorting = !invertSorting;
+              setState(() {
+                _invertSorting = !_invertSorting;
+              });
             },
           ),
         ],
@@ -44,26 +53,20 @@ class _CaloriesPageState extends State<CaloriesPage> {
       body: Container(
         child: BlocBuilder<CaloriesBloc, AbstractCaloriesState>(
           builder: (context, AbstractCaloriesState state) {
-            print(state);
-
             if (state is CaloriesFetchedState) {
               return SingleChildScrollView(
                   child: Table(
                 border: TableBorder.all(),
                 columnWidths: const <int, TableColumnWidth>{
                   0: IntrinsicColumnWidth(),
-                  1: IntrinsicColumnWidth(),
+                  1: FlexColumnWidth(),
                   2: FlexColumnWidth(),
-                  3: FlexColumnWidth(),
                 },
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                children: state.calorieItems.map((CalorieItemModel calorieItem) {
+                children:
+                    state.calorieItems.map((CalorieItemModel calorieItem) {
                   return TableRow(
                     children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.all(3),
-                        child: Text(calorieItem.id.toString()),
-                      ),
                       Container(
                         padding: EdgeInsets.all(3),
                         child: Text(calorieItem.value.toStringAsFixed(2)),
@@ -74,7 +77,8 @@ class _CaloriesPageState extends State<CaloriesPage> {
                       ),
                       Container(
                         padding: EdgeInsets.all(3),
-                        child: Text(DateFormat('HH:mm').format(calorieItem.createdAt)),
+                        child: Text(
+                            DateFormat('HH:mm').format(calorieItem.createdAt)),
                       ),
                     ],
                   );
