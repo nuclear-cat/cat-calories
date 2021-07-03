@@ -30,7 +30,7 @@ class CaloriesBloc extends Bloc<AbstractCaloriesEvent, AbstractCaloriesState> {
       bool invertSortOrder, DateTime dayStart) async* {
     final calorieItems = await calorieItemRepository.fetchAllByProfileAndDay(
         _activeProfile!,
-        orderBy: 'id ' + (invertSortOrder ? 'DESC' : 'ASC'),
+        orderBy: 'created_at ' + (invertSortOrder ? 'ASC' : 'DESC'),
         limit: 50,
         dayStart: dayStart);
 

@@ -6,8 +6,8 @@ import 'package:cat_calories/screens/create_product_screen.dart';
 import 'package:cat_calories/screens/home/_app_drawer.dart';
 import 'package:cat_calories/screens/home/_calorie_items_view.dart';
 import 'package:cat_calories/screens/home/_days_view.dart';
-import 'package:cat_calories/screens/home/_products_view.dart';
 import 'package:cat_calories/screens/home/_waking_periods_view.dart';
+import 'package:cat_calories/screens/products/products_page.dart';
 import 'package:cat_calories/ui/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen>
     });
 
     _calorieItemController.addListener(() {
-      print(_calorieItemController.text);
       BlocProvider.of<HomeBloc>(context)
           .add(CaloriePreparedEvent(_calorieItemController.text));
     });
@@ -90,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       body: Scaffold(
         body: DefaultTabController(
-          length: 5,
+          length: 4,
           child: Scaffold(
             drawer: Drawer(
               child: AppDrawer(),
@@ -111,6 +110,10 @@ class _HomeScreenState extends State<HomeScreen>
                             value: 'create_product',
                             child: ListTile(title: Text('Create product')),
                           ),
+                          PopupMenuItem<String>(
+                            value: 'products',
+                            child: ListTile(title: Text('Products')),
+                          ),
                         ];
                       },
                       onSelected: (String value) {
@@ -127,6 +130,12 @@ class _HomeScreenState extends State<HomeScreen>
                             MaterialPageRoute(
                                 builder: (context) => DayCaloriesPage(
                                     state.activeProfile, state.startDate)),
+                          );
+                        } else if (value == 'products') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProductsPage()),
                           );
                         }
                       },
@@ -148,13 +157,9 @@ class _HomeScreenState extends State<HomeScreen>
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
-                // labelPadding: EdgeInsets.zero,
                 tabs: [
                   Tab(
                     text: 'Info',
-                  ),
-                  Tab(
-                    text: 'Products',
                   ),
                   Tab(
                     text: 'kCal',
@@ -196,7 +201,6 @@ class _HomeScreenState extends State<HomeScreen>
             body: TabBarView(
               children: [
                 MainInfoView(),
-                ProductsView(),
                 CalorieItemsView(),
                 WakingPeriodsView(),
                 DaysView(),

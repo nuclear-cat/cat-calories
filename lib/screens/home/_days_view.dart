@@ -3,6 +3,7 @@ import 'package:cat_calories/blocs/home/home_event.dart';
 import 'package:cat_calories/blocs/home/home_state.dart';
 import 'package:cat_calories/models/day_result.dart';
 import 'package:cat_calories/screens/calories/day_calories_page.dart';
+import 'package:cat_calories/ui/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,8 +38,25 @@ class _DaysViewState extends State<DaysView> {
               return ListTile(
                 contentPadding: EdgeInsets.fromLTRB(25, 10, 25, 10),
                 key: Key(index.toString()),
-                title: Text(dayItem.valueSum.toStringAsFixed(2) + ' kCal'),
-                subtitle: Text((DateFormat('MMM d, y').format(dayItem.createdAtDay))),
+                title: Text(dayItem.valueSum.toStringAsFixed(2) + ' kcal'),
+                trailing: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                    child: Column(
+                      children: [
+                        Text(
+                          dayItem.negativeValueSum == 0
+                              ? '-0.00'
+                              : dayItem.negativeValueSum.toStringAsFixed(2),
+                          style: TextStyle(fontSize: 12, color: SuccessColor),
+                        ),
+                        Text(
+                          '+' + dayItem.positiveValueSum.toStringAsFixed(2),
+                          style: TextStyle(fontSize: 12, color: DangerColor),
+                        ),
+                      ],
+                    )),
+                subtitle:
+                    Text((DateFormat('MMM d, y').format(dayItem.createdAtDay))),
                 onTap: () {
                   showModalBottomSheet<dynamic>(
                     context: context,
@@ -53,7 +71,10 @@ class _DaysViewState extends State<DaysView> {
 
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => DayCaloriesPage(state.activeProfile, dayItem.createdAtDay)),
+                                MaterialPageRoute(
+                                    builder: (context) => DayCaloriesPage(
+                                        state.activeProfile,
+                                        dayItem.createdAtDay)),
                               );
                             },
                           ),
@@ -76,11 +97,15 @@ class _DaysViewState extends State<DaysView> {
                                       MaterialButton(
                                         child: Text("Ok"),
                                         onPressed: () {
-                                          BlocProvider.of<HomeBloc>(context).add(RemovingCaloriesByCreatedAtDayEvent(
-                                              dayItem.createdAtDay, state.activeProfile));
+                                          BlocProvider.of<HomeBloc>(context).add(
+                                              RemovingCaloriesByCreatedAtDayEvent(
+                                                  dayItem.createdAtDay,
+                                                  state.activeProfile));
 
                                           ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(content: Text('Day removed')));
+                                              .showSnackBar(SnackBar(
+                                                  content:
+                                                      Text('Day removed')));
 
                                           Navigator.of(context).pop();
                                           Navigator.of(context).pop();

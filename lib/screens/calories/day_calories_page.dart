@@ -16,7 +16,8 @@ class DayCaloriesPage extends StatefulWidget {
   const DayCaloriesPage(this.profile, this.startDate);
 
   @override
-  State<StatefulWidget> createState() => _DayCaloriesPageState(profile, startDate);
+  State<StatefulWidget> createState() =>
+      _DayCaloriesPageState(profile, startDate);
 }
 
 class _DayCaloriesPageState extends State<DayCaloriesPage> {
@@ -34,14 +35,13 @@ class _DayCaloriesPageState extends State<DayCaloriesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Calories'),
+        title: Text('Calories ' + DateFormat('MMM d, y').format(startDate),),
         actions: [
           IconButton(
             icon: Transform(
                 alignment: Alignment.center,
                 transform: Matrix4.rotationX(_invertSorting ? math.pi : 0),
-                child: Icon(Icons.sort)
-            ),
+                child: Icon(Icons.sort)),
             onPressed: () {
               setState(() {
                 _invertSorting = !_invertSorting;
@@ -54,36 +54,17 @@ class _DayCaloriesPageState extends State<DayCaloriesPage> {
         child: BlocBuilder<CaloriesBloc, AbstractCaloriesState>(
           builder: (context, AbstractCaloriesState state) {
             if (state is CaloriesFetchedState) {
-              return SingleChildScrollView(
-                  child: Table(
-                border: TableBorder.all(),
-                columnWidths: const <int, TableColumnWidth>{
-                  0: IntrinsicColumnWidth(),
-                  1: FlexColumnWidth(),
-                  2: FlexColumnWidth(),
-                },
-                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              return ListView(
                 children:
                     state.calorieItems.map((CalorieItemModel calorieItem) {
-                  return TableRow(
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.all(3),
-                        child: Text(calorieItem.value.toStringAsFixed(2)),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(3),
-                        child: Text(calorieItem.description ?? ''),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(3),
-                        child: Text(
-                            DateFormat('HH:mm').format(calorieItem.createdAt)),
-                      ),
-                    ],
+                  return ListTile(
+                    title: Text('${calorieItem.value} kcal'),
+                    subtitle: Text(
+                      DateFormat('HH:mm').format(calorieItem.createdAt),
+                    ),
                   );
                 }).toList(),
-              ));
+              );
             }
             return Center(
               child: Text('Error'),

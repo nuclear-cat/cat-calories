@@ -123,6 +123,8 @@ class CalorieItemRepository {
     final result = await DBProvider.db.rawQuery('''
       SELECT 
           SUM(ci.value) as value_sum, 
+          SUM(case when ci.value > 0 THEN ci.value ELSE 0 END) positive_value_sum,
+          SUM(case when ci.value < 0 THEN ci.value ELSE 0 END) negative_value_sum,
           ci.created_at_day
       
       FROM ${tableName} ci

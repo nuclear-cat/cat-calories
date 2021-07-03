@@ -5,6 +5,7 @@ import 'package:cat_calories/models/day_result.dart';
 import 'package:cat_calories/models/waking_period_model.dart';
 import 'package:cat_calories/screens/edit_waking_period_screen.dart';
 import 'package:cat_calories/ui/colors.dart';
+import 'package:cat_calories/ui/widgets/progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,52 +36,77 @@ class _MainInfoViewState extends State<MainInfoView> {
               child: Card(
                 child: Builder(builder: (BuildContext context) {
                   if (state.currentWakingPeriod == null) {
-                    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
-                        child: Text(
-                          'No active waking periods',
-                          style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                        ),
-                      ),
-                      Divider(),
-                      ButtonBar(
-                        alignment: MainAxisAlignment.start,
+                    return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          MaterialButton(
-                            onPressed: () {
-                              final wakingPeriod = WakingPeriodModel(
-                                id: null,
-                                description: null,
-                                createdAt: DateTime.now(),
-                                updatedAt: DateTime.now(),
-                                startedAt: DateTime.now(),
-                                endedAt: null,
-                                caloriesValue: 0.0,
-                                profileId: state.activeProfile.id!,
-                                caloriesLimitGoal: state.activeProfile.caloriesLimitGoal,
-                                expectedWakingTimeSeconds: state.activeProfile.getExpectedWakingDuration().inSeconds,
-                              );
-
-                              BlocProvider.of<HomeBloc>(context).add(WakingPeriodCreatingEvent(wakingPeriod));
-                            },
-                            child: Text('Start waking period', style: TextStyle(
-                              color: Theme.of(context).buttonColor,
-                              fontWeight: FontWeight.w600,
-                            ),),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+                            child: Text(
+                              'No active waking periods',
+                              style: TextStyle(
+                                  color: Colors.black.withOpacity(0.6)),
+                            ),
                           ),
-                        ],
-                      ),
-                    ]);
+                          Divider(),
+                          ButtonBar(
+                            alignment: MainAxisAlignment.start,
+                            children: [
+                              MaterialButton(
+                                onPressed: () {
+                                  final wakingPeriod = WakingPeriodModel(
+                                    id: null,
+                                    description: null,
+                                    createdAt: DateTime.now(),
+                                    updatedAt: DateTime.now(),
+                                    startedAt: DateTime.now(),
+                                    endedAt: null,
+                                    caloriesValue: 0.0,
+                                    profileId: state.activeProfile.id!,
+                                    caloriesLimitGoal:
+                                        state.activeProfile.caloriesLimitGoal,
+                                    expectedWakingTimeSeconds: state
+                                        .activeProfile
+                                        .getExpectedWakingDuration()
+                                        .inSeconds,
+                                  );
+
+                                  BlocProvider.of<HomeBloc>(context).add(
+                                      WakingPeriodCreatingEvent(wakingPeriod));
+                                },
+                                child: Text(
+                                  'Start waking period',
+                                  style: TextStyle(
+                                    color: Theme.of(context).buttonColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ]);
                   }
 
-                  final int currentTimestamp = (state.nowDateTime.millisecondsSinceEpoch / 1000).round().toInt();
-                  final int secondsToEndDay = state.currentWakingPeriod!.getToTimestamp() - currentTimestamp;
-                  final double allowedCalories = state.currentWakingPeriod!.caloriesLimitGoal -
-                      state.currentWakingPeriod!.getCaloriesPerSecond() * secondsToEndDay -
-                      state.getPeriodCaloriesEatenSum();
-                  final double allowedSeconds = allowedCalories / state.currentWakingPeriod!.getCaloriesPerSecond();
-                  final Duration allowedDuration = Duration(seconds: allowedSeconds.round().toInt());
+                  final int currentTimestamp =
+                      (state.nowDateTime.millisecondsSinceEpoch / 1000)
+                          .round()
+                          .toInt();
+                  final int secondsToEndDay =
+                      state.currentWakingPeriod!.getToTimestamp() -
+                          currentTimestamp;
+                  final double allowedCalories =
+                      state.currentWakingPeriod!.caloriesLimitGoal -
+                          state.currentWakingPeriod!.getCaloriesPerSecond() *
+                              secondsToEndDay -
+                          state.getPeriodCaloriesEatenSum();
+                  final double allowedSeconds = allowedCalories /
+                      state.currentWakingPeriod!.getCaloriesPerSecond();
+                  final Duration allowedDuration =
+                      Duration(seconds: allowedSeconds.round().toInt());
+
+                  final double periodCaloriesEatenPercentage =
+                      state.getPeriodCaloriesEatenSum() /
+                          state.currentWakingPeriod!.caloriesLimitGoal *
+                          100;
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,7 +117,9 @@ class _MainInfoViewState extends State<MainInfoView> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                         child: Text(
-                          DateFormat('EEEE').format(state.currentWakingPeriod!.startedAt) + ' waking period',
+                          DateFormat('EEEE').format(
+                                  state.currentWakingPeriod!.startedAt) +
+                              ' waking period',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -101,9 +129,11 @@ class _MainInfoViewState extends State<MainInfoView> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                         child: Text(
-                          DateFormat('MMM d, HH:mm').format(state.currentWakingPeriod!.startedAt) +
+                          DateFormat('MMM d, HH:mm').format(
+                                  state.currentWakingPeriod!.startedAt) +
                               ' ~ ' +
-                              DateFormat('MMM d, HH:mm').format(state.currentWakingPeriod!.getToDateTime()),
+                              DateFormat('MMM d, HH:mm').format(
+                                  state.currentWakingPeriod!.getToDateTime()),
                           style: TextStyle(
                             color: Colors.black.withOpacity(0.6),
                             fontSize: 12,
@@ -111,13 +141,21 @@ class _MainInfoViewState extends State<MainInfoView> {
                         ),
                       ),
                       Builder(builder: (BuildContext context) {
-                        final int overLimit = state.currentWakingPeriod!.getToTimestamp() - currentTimestamp;
+                        final int overLimit =
+                            state.currentWakingPeriod!.getToTimestamp() -
+                                currentTimestamp;
 
                         if (overLimit > 0) {
-                          final Duration overLimitDuration = Duration(seconds: overLimit);
-                          final String overLimitDurationString = (overLimitDuration.inHours).toString().padLeft(2, '0') +
-                              ':' +
-                              (overLimitDuration.inMinutes.remainder(60)).toString().padLeft(2, '0');
+                          final Duration overLimitDuration =
+                              Duration(seconds: overLimit);
+                          final String overLimitDurationString =
+                              (overLimitDuration.inHours)
+                                      .toString()
+                                      .padLeft(2, '0') +
+                                  ':' +
+                                  (overLimitDuration.inMinutes.remainder(60))
+                                      .toString()
+                                      .padLeft(2, '0');
 
                           return Padding(
                             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -131,10 +169,16 @@ class _MainInfoViewState extends State<MainInfoView> {
                           );
                         }
 
-                        final Duration overLimitDuration = Duration(seconds: overLimit * -1);
-                        final String overLimitDurationString = (overLimitDuration.inHours).toString().padLeft(2, '0') +
-                            ':' +
-                            (overLimitDuration.inMinutes.remainder(60)).toString().padLeft(2, '0');
+                        final Duration overLimitDuration =
+                            Duration(seconds: overLimit * -1);
+                        final String overLimitDurationString =
+                            (overLimitDuration.inHours)
+                                    .toString()
+                                    .padLeft(2, '0') +
+                                ':' +
+                                (overLimitDuration.inMinutes.remainder(60))
+                                    .toString()
+                                    .padLeft(2, '0');
 
                         return Padding(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -148,45 +192,177 @@ class _MainInfoViewState extends State<MainInfoView> {
                         );
                       }),
                       Divider(),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                        child: Text(
-                          'Goal: ' +
-                              state.currentWakingPeriod!.caloriesLimitGoal.toString() +
-                              ' kcal/' +
-                              state.currentWakingPeriod!.getExpectedWakingDuration().inHours.toString() +
-                              'h (${state.currentWakingPeriod!.getCaloriesPerHour().toStringAsFixed(2)} kcal/h)',
-                          style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                        ),
-                      ),
-                      Builder(builder: (BuildContext context) {
-                        if (allowedCalories > 0) {
-                          final String stringAllowedDuration = (allowedDuration.inHours).toString().padLeft(2, '0') +
-                              ':' +
-                              (allowedDuration.inMinutes.remainder(60)).toString().padLeft(2, '0');
 
-                          return Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                            child: Text(
-                              'You can eat ' + allowedCalories.toStringAsFixed(2) + ' kcal , $stringAllowedDuration',
-                              style: TextStyle(color: SuccessColor),
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                            margin: EdgeInsets.fromLTRB(5, 5, 10, 5),
+                            height: 50.0,
+                            width: 50.0,
+                            child: CustomPaint(
+                              child: Center(
+                                child: Text(
+                                  periodCaloriesEatenPercentage
+                                          .toStringAsFixed(0) +
+                                      '%',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ),
+                              foregroundPainter: ProgressPainter(
+                                  defaultCircleColor: Colors.grey.shade200,
+                                  percentageCompletedCircleColor:
+                                      periodCaloriesEatenPercentage >= 100
+                                          ? DangerColor
+                                          : DangerLiteColor,
+                                  completedPercentage:
+                                      periodCaloriesEatenPercentage >= 100
+                                          ? 100
+                                          : periodCaloriesEatenPercentage,
+                                  circleWidth: 3.0),
                             ),
-                          );
-                        }
-
-                        final String stringAllowedDuration = (allowedDuration.inHours * -1).toString().padLeft(2, '0') +
-                            ':' +
-                            (allowedDuration.inMinutes.remainder(60) * -1).toString().padLeft(2, '0');
-
-                        return Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          child: Text(
-                            'You can eat ' + allowedCalories.toStringAsFixed(2) + ' kcal (after $stringAllowedDuration)',
-                            // 'You can eat after',
-                            style: TextStyle(color: DangerColor),
                           ),
-                        );
-                      }),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                                    child: Text(
+                                      'Goal: ' +
+                                          state.currentWakingPeriod!
+                                              .caloriesLimitGoal
+                                              .toString() +
+                                          ' kcal/' +
+                                          state.currentWakingPeriod!
+                                              .getExpectedWakingDuration()
+                                              .inHours
+                                              .toString() +
+                                          'h (${state.currentWakingPeriod!.getCaloriesPerHour().toStringAsFixed(2)} kcal/h)',
+                                      style: TextStyle(
+                                          color: Colors.black.withOpacity(0.6)),
+                                    ),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child:
+                                      Builder(builder: (BuildContext context) {
+                                    if (allowedCalories > 0) {
+                                      final String stringAllowedDuration =
+                                          (allowedDuration.inHours)
+                                                  .toString()
+                                                  .padLeft(2, '0') +
+                                              ':' +
+                                              (allowedDuration.inMinutes
+                                                      .remainder(60))
+                                                  .toString()
+                                                  .padLeft(2, '0');
+
+                                      return Text(
+                                        'You can eat ' +
+                                            allowedCalories.toStringAsFixed(2) +
+                                            ' kcal , $stringAllowedDuration',
+                                        style: TextStyle(color: SuccessColor),
+                                        textAlign: TextAlign.left,
+                                      );
+                                    }
+
+                                    final String stringAllowedDuration =
+                                        (allowedDuration.inHours * -1)
+                                                .toString()
+                                                .padLeft(2, '0') +
+                                            ':' +
+                                            (allowedDuration.inMinutes
+                                                        .remainder(60) *
+                                                    -1)
+                                                .toString()
+                                                .padLeft(2, '0');
+
+                                    return Text(
+                                      'You can eat ' +
+                                          allowedCalories.toStringAsFixed(2) +
+                                          ' kcal (after $stringAllowedDuration)',
+                                      // 'You can eat after',
+                                      style: TextStyle(color: DangerColor),
+                                      textAlign: TextAlign.left,
+                                    );
+                                  }),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      //
+                      //
+                      //
+                      // Padding(
+                      //   padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                      //   child: Text(
+                      //     'Goal: ' +
+                      //         state.currentWakingPeriod!.caloriesLimitGoal
+                      //             .toString() +
+                      //         ' kcal/' +
+                      //         state.currentWakingPeriod!
+                      //             .getExpectedWakingDuration()
+                      //             .inHours
+                      //             .toString() +
+                      //         'h (${state.currentWakingPeriod!.getCaloriesPerHour().toStringAsFixed(2)} kcal/h)',
+                      //     style:
+                      //         TextStyle(color: Colors.black.withOpacity(0.6)),
+                      //   ),
+                      // ),
+                      //
+                      // Builder(builder: (BuildContext context) {
+                      //   if (allowedCalories > 0) {
+                      //     final String stringAllowedDuration =
+                      //         (allowedDuration.inHours)
+                      //                 .toString()
+                      //                 .padLeft(2, '0') +
+                      //             ':' +
+                      //             (allowedDuration.inMinutes.remainder(60))
+                      //                 .toString()
+                      //                 .padLeft(2, '0');
+                      //
+                      //     return Padding(
+                      //       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      //       child: Text(
+                      //         'You can eat ' +
+                      //             allowedCalories.toStringAsFixed(2) +
+                      //             ' kcal , $stringAllowedDuration',
+                      //         style: TextStyle(color: SuccessColor),
+                      //       ),
+                      //     );
+                      //   }
+                      //
+                      //   final String stringAllowedDuration =
+                      //       (allowedDuration.inHours * -1)
+                      //               .toString()
+                      //               .padLeft(2, '0') +
+                      //           ':' +
+                      //           (allowedDuration.inMinutes.remainder(60) * -1)
+                      //               .toString()
+                      //               .padLeft(2, '0');
+                      //
+                      //   return Padding(
+                      //     padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      //     child: Text(
+                      //       'You can eat ' +
+                      //           allowedCalories.toStringAsFixed(2) +
+                      //           ' kcal (after $stringAllowedDuration)',
+                      //       // 'You can eat after',
+                      //       style: TextStyle(color: DangerColor),
+                      //     ),
+                      //   );
+                      // }),
+                      //
+                      //
+                      //
+                      //
+
                       Divider(),
                       ButtonBar(
                         buttonPadding: EdgeInsets.zero,
@@ -207,8 +383,8 @@ class _MainInfoViewState extends State<MainInfoView> {
                                 builder: (BuildContext context) {
                                   return AlertDialog(
                                     title: Text('Done waking period'),
-                                    content:
-                                        Text('${state.getPeriodCaloriesEatenSum()} kCal by current waking period. Continue?'),
+                                    content: Text(
+                                        '${state.getPeriodCaloriesEatenSum()} kCal by current waking period. Continue?'),
                                     actions: [
                                       MaterialButton(
                                         child: Text('Cancel'),
@@ -219,8 +395,11 @@ class _MainInfoViewState extends State<MainInfoView> {
                                       MaterialButton(
                                         child: Text("Ok"),
                                         onPressed: () {
-                                          BlocProvider.of<HomeBloc>(context).add(WakingPeriodEndingEvent(
-                                              state.currentWakingPeriod!, state.getPeriodCaloriesEatenSum()));
+                                          BlocProvider.of<HomeBloc>(context)
+                                              .add(WakingPeriodEndingEvent(
+                                                  state.currentWakingPeriod!,
+                                                  state
+                                                      .getPeriodCaloriesEatenSum()));
                                           Navigator.pop(context);
                                         },
                                       ),
@@ -235,7 +414,10 @@ class _MainInfoViewState extends State<MainInfoView> {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => EditWakingPeriodScreen(state.currentWakingPeriod!)),
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        EditWakingPeriodScreen(
+                                            state.currentWakingPeriod!)),
                               );
                             },
                             child: Text(
@@ -263,7 +445,8 @@ class _MainInfoViewState extends State<MainInfoView> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
                     child: Text(
-                      'Today: ' + DateFormat('MMM, d').format(state.nowDateTime),
+                      'Today: ' +
+                          DateFormat('MMM, d').format(state.nowDateTime),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -285,14 +468,18 @@ class _MainInfoViewState extends State<MainInfoView> {
               ),
             ),
             Column(
-              children: state.getDaysUntilToday().days.map((DayResultModel day) {
+              children:
+                  state.getDaysUntilToday().days.map((DayResultModel day) {
                 return SizedBox(
                   width: double.infinity,
                   child: Card(
                     child: Padding(
                       padding: EdgeInsets.all(20),
                       child: Text(
-                          DateFormat('MMM d, y').format(day.createdAtDay) + ': ' + day.valueSum.round().toString() + ' kcal'),
+                          DateFormat('MMM d, y').format(day.createdAtDay) +
+                              ': ' +
+                              day.valueSum.round().toString() +
+                              ' kcal'),
                     ),
                   ),
                 );
