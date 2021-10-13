@@ -128,8 +128,9 @@ class _HomeScreenState extends State<HomeScreen>
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => DayCaloriesPage(
-                                    state.activeProfile, state.startDate)),
+                                builder: (context) {
+                                  return DayCaloriesPage(state.startDate);
+                                }),
                           );
                         } else if (value == 'products') {
                           Navigator.push(

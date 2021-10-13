@@ -28,7 +28,7 @@ class _DaysViewState extends State<DaysView> {
         }
 
         if (state is HomeFetched) {
-          final List<DayResultModel> dayResultItems = state.days;
+          final List<DayResultModel> dayResultItems = state.days30;
 
           return ListView.builder(
             itemCount: dayResultItems.length,
@@ -36,6 +36,7 @@ class _DaysViewState extends State<DaysView> {
               final DayResultModel dayItem = dayResultItems[index];
 
               return ListTile(
+                leading: Icon(Icons.calendar_today_outlined),
                 contentPadding: EdgeInsets.fromLTRB(25, 10, 25, 10),
                 key: Key(index.toString()),
                 title: Text(dayItem.valueSum.toStringAsFixed(2) + ' kcal'),
@@ -73,7 +74,6 @@ class _DaysViewState extends State<DaysView> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => DayCaloriesPage(
-                                        state.activeProfile,
                                         dayItem.createdAtDay)),
                               );
                             },
@@ -95,7 +95,7 @@ class _DaysViewState extends State<DaysView> {
                                         },
                                       ),
                                       MaterialButton(
-                                        child: Text("Ok"),
+                                        child: Text('Ok'),
                                         onPressed: () {
                                           BlocProvider.of<HomeBloc>(context).add(
                                               RemovingCaloriesByCreatedAtDayEvent(

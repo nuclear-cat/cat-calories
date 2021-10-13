@@ -6,7 +6,7 @@ class CalorieItemModel {
   DateTime? eatenAt;
   DateTime createdAt;
   int profileId;
-  int wakingPeriodId;
+  int? wakingPeriodId;
 
   CalorieItemModel({
     required this.id,

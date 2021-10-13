@@ -50,4 +50,14 @@ class WakingPeriodRepository {
 
     return wakingPeriod;
   }
+
+  Future<WakingPeriodModel?> findFirstFromStartDate(ProfileModel profile, DateTime dateTime) async {
+    final wakingPeriodsResult = await DBProvider.db.rawQuery('SELECT *  FROM waking_periods  WHERE ended_at IS NULL  AND profile_id = ? LIMIT 1', [profile.id]);
+
+    if (wakingPeriodsResult.toList().length == 0) {
+      return null;
+    }
+
+    return WakingPeriodModel.fromJson(wakingPeriodsResult.toList().first);
+  }
 }

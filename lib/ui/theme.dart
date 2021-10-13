@@ -19,7 +19,12 @@ class CustomTheme {
         color: Colors.white,
       ),
       textTheme: TextTheme(),
-      accentColor: Colors.cyan[600],
+      colorScheme: ColorScheme.light(
+        primary: const Color(0xffffffff),
+        surface: const Color(0xff000000),
+        background: const Color(0xff000000),
+        onPrimary: const Color(0xff000000),
+      ),
       disabledColor: Colors.grey,
       primaryColor: Colors.white,
       primaryTextTheme: TextTheme(

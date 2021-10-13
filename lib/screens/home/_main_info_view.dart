@@ -192,7 +192,6 @@ class _MainInfoViewState extends State<MainInfoView> {
                         );
                       }),
                       Divider(),
-
                       Row(
                         children: [
                           Container(
@@ -295,74 +294,6 @@ class _MainInfoViewState extends State<MainInfoView> {
                           ),
                         ],
                       ),
-
-                      //
-                      //
-                      //
-                      // Padding(
-                      //   padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                      //   child: Text(
-                      //     'Goal: ' +
-                      //         state.currentWakingPeriod!.caloriesLimitGoal
-                      //             .toString() +
-                      //         ' kcal/' +
-                      //         state.currentWakingPeriod!
-                      //             .getExpectedWakingDuration()
-                      //             .inHours
-                      //             .toString() +
-                      //         'h (${state.currentWakingPeriod!.getCaloriesPerHour().toStringAsFixed(2)} kcal/h)',
-                      //     style:
-                      //         TextStyle(color: Colors.black.withOpacity(0.6)),
-                      //   ),
-                      // ),
-                      //
-                      // Builder(builder: (BuildContext context) {
-                      //   if (allowedCalories > 0) {
-                      //     final String stringAllowedDuration =
-                      //         (allowedDuration.inHours)
-                      //                 .toString()
-                      //                 .padLeft(2, '0') +
-                      //             ':' +
-                      //             (allowedDuration.inMinutes.remainder(60))
-                      //                 .toString()
-                      //                 .padLeft(2, '0');
-                      //
-                      //     return Padding(
-                      //       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      //       child: Text(
-                      //         'You can eat ' +
-                      //             allowedCalories.toStringAsFixed(2) +
-                      //             ' kcal , $stringAllowedDuration',
-                      //         style: TextStyle(color: SuccessColor),
-                      //       ),
-                      //     );
-                      //   }
-                      //
-                      //   final String stringAllowedDuration =
-                      //       (allowedDuration.inHours * -1)
-                      //               .toString()
-                      //               .padLeft(2, '0') +
-                      //           ':' +
-                      //           (allowedDuration.inMinutes.remainder(60) * -1)
-                      //               .toString()
-                      //               .padLeft(2, '0');
-                      //
-                      //   return Padding(
-                      //     padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      //     child: Text(
-                      //       'You can eat ' +
-                      //           allowedCalories.toStringAsFixed(2) +
-                      //           ' kcal (after $stringAllowedDuration)',
-                      //       // 'You can eat after',
-                      //       style: TextStyle(color: DangerColor),
-                      //     ),
-                      //   );
-                      // }),
-                      //
-                      //
-                      //
-                      //
-
                       Divider(),
                       ButtonBar(
                         buttonPadding: EdgeInsets.zero,
@@ -384,7 +315,7 @@ class _MainInfoViewState extends State<MainInfoView> {
                                   return AlertDialog(
                                     title: Text('Done waking period'),
                                     content: Text(
-                                        '${state.getPeriodCaloriesEatenSum()} kCal by current waking period. Continue?'),
+                                        '${state.getPeriodCaloriesEatenSum()} kcal by current waking period. Continue?'),
                                     actions: [
                                       MaterialButton(
                                         child: Text('Cancel'),
@@ -462,24 +393,54 @@ class _MainInfoViewState extends State<MainInfoView> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                     child: Text(
-                        'AVG: ${state.getDaysUntilToday().getAvg().toStringAsFixed(2)} kcal of ${state.getDaysUntilToday().days.length} days'),
+                      'AVG: ${state.get30DaysUntilToday().getAvg().toStringAsFixed(2)} kcal of ${state.get30DaysUntilToday().days.length} days',
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                    child: Text(
+                      'AVG: ${state.get2DaysUntilToday().getAvg().toStringAsFixed(2)} kcal of ${state.get2DaysUntilToday().days.length} days',
+                    ),
                   ),
                 ],
               ),
             ),
             Column(
               children:
-                  state.getDaysUntilToday().days.map((DayResultModel day) {
+                  state.get30DaysUntilToday().days.map((DayResultModel day) {
                 return SizedBox(
                   width: double.infinity,
                   child: Card(
                     child: Padding(
                       padding: EdgeInsets.all(20),
-                      child: Text(
-                          DateFormat('MMM d, y').format(day.createdAtDay) +
-                              ': ' +
-                              day.valueSum.round().toString() +
-                              ' kcal'),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(DateFormat('MMM d, y')
+                                    .format(day.createdAtDay) +
+                                ': ' +
+                                day.valueSum.round().toString() +
+                                ' kcal'),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                '+${day.positiveValueSum.toStringAsFixed(2)}',
+                                style: TextStyle(
+                                  color: DangerColor,
+                                ),
+                              ),
+                              Text(
+                                '${day.negativeValueSum.toStringAsFixed(2)}',
+                                style: TextStyle(
+                                  color: SuccessColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );

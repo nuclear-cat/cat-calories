@@ -212,8 +212,15 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
   Stream<HomeFetched> _fetchHomeData() async* {
     final ProfileModel activeProfile = _activeProfile!;
 
-    final List<DayResultModel> _dayResultsList =
+    final List<DayResultModel> _dayResultsList30days =
         await calorieItemRepository.fetchDaysByProfile(activeProfile, 30);
+
+
+    final List<DayResultModel> _dayResultsList2days =
+        await calorieItemRepository.fetchDaysByProfile(activeProfile, 2);
+
+
+
     final List<ProfileModel> _profiles = await profileRepository.fetchAll();
     final List<WakingPeriodModel> wakingPeriods =
         await wakingPeriodRepository.fetchByProfile(activeProfile);
@@ -241,7 +248,8 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
       nowDateTime: DateTime.now(),
       periodCalorieItems: _calorieItems,
       todayCalorieItems: todayCalorieItems,
-      days: _dayResultsList,
+      days30: _dayResultsList30days,
+      days2: _dayResultsList2days,
       profiles: _profiles,
       wakingPeriods: wakingPeriods,
       activeProfile: activeProfile,

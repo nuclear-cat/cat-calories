@@ -12,7 +12,8 @@ class HomeFetched extends AbstractHomeState {
   final DateTime nowDateTime;
   final List<CalorieItemModel> periodCalorieItems;
   final List<CalorieItemModel> todayCalorieItems;
-  final List<DayResultModel> days;
+  final List<DayResultModel> days30;
+  final List<DayResultModel> days2;
   final List<ProfileModel> profiles;
   final List<WakingPeriodModel> wakingPeriods;
   final ProfileModel activeProfile;
@@ -26,7 +27,8 @@ class HomeFetched extends AbstractHomeState {
     required this.nowDateTime,
     required this.periodCalorieItems,
     required this.todayCalorieItems,
-    required this.days,
+    required this.days30,
+    required this.days2,
     required this.profiles,
     required this.wakingPeriods,
     required this.activeProfile,
@@ -69,11 +71,25 @@ class HomeFetched extends AbstractHomeState {
     return DateTime(nowDateTime.year, nowDateTime.month, nowDateTime.day, 0, 0, 0);
   }
 
-  DaysStat getDaysUntilToday() {
+  DaysStat get30DaysUntilToday() {
     List<DayResultModel> days = [];
     double totalCalories = 0;
 
-    this.days.forEach((DayResultModel dayResult) {
+    this.days30.forEach((DayResultModel dayResult) {
+      if (getDayStart().millisecondsSinceEpoch > dayResult.createdAtDay.millisecondsSinceEpoch) {
+        days.add(dayResult);
+        totalCalories += dayResult.valueSum;
+      }
+    });
+
+    return DaysStat(days, totalCalories);
+  }
+
+  DaysStat get2DaysUntilToday() {
+    List<DayResultModel> days = [];
+    double totalCalories = 0;
+
+    this.days2.forEach((DayResultModel dayResult) {
       if (getDayStart().millisecondsSinceEpoch > dayResult.createdAtDay.millisecondsSinceEpoch) {
         days.add(dayResult);
         totalCalories += dayResult.valueSum;

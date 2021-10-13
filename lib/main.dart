@@ -1,4 +1,4 @@
-import 'package:cat_calories/blocs/calories/calories_bloc.dart';
+import 'package:cat_calories/blocs/calories/calories_cubit.dart';
 import 'package:cat_calories/locator.dart';
 import 'package:cat_calories/ui/theme.dart';
 import 'package:flutter/material.dart';
@@ -20,8 +20,7 @@ class App extends StatelessWidget {
           create: (context) => HomeBloc(),
         ),
         BlocProvider(
-          create: (context) => CaloriesBloc(),
-
+          create: (context) => CaloriesCubit(),
         ),
       ],
       child: MaterialApp(

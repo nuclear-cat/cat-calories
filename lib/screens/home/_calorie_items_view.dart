@@ -59,7 +59,7 @@ class _CalorieItemsViewState extends State<CalorieItemsView> {
                   child: ListTile(
                     contentPadding: EdgeInsets.fromLTRB(25, 10, 25, 10),
                     title: Text(
-                      calorieItem.value.toStringAsFixed(2) + ' kCal',
+                      calorieItem.value.toStringAsFixed(2) + ' kcal',
                       style: TextStyle(color: (calorieItem.value > 0 ? DangerColor : SuccessColor)),
                     ),
                     subtitle: Text(description),
