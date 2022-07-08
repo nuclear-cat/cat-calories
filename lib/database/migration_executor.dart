@@ -1,6 +1,5 @@
 import 'package:cat_calories/database/migrations/abstract_migration.dart';
 import 'package:sqflite/sqflite.dart';
-
 import 'migrations.dart';
 
 class MigrationExecutor {

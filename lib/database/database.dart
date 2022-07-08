@@ -76,6 +76,26 @@ class DBProvider {
 			''');
 
         await db.execute('''
+				CREATE TABLE products(
+					id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+					title TEXT,
+					description TEXT NULL,
+					created_at INT,
+					updated_at INT,
+					uses_count INT,
+					profile_id INT,
+					sort_order INT DEFAULT 0,
+					barcode INT NULL,
+					calorie_content REAL NULL,
+					proteins REAL NULL,
+					fats REAL NULL,
+					carbohydrates REAL NULL,
+					
+				  FOREIGN KEY(profile_id) REFERENCES profiles(id)
+				)
+			''');
+
+        await db.execute('''
 				CREATE INDEX calorie_items_created_at_day_idx ON calorie_items(created_at_day)
 			''');
       },
@@ -99,17 +119,20 @@ class DBProvider {
     return await db.insert(table, row);
   }
 
-  Future<List<Map<String, dynamic>>> rawQuery(String sql, [List<dynamic>? arguments]) async {
+  Future<List<Map<String, dynamic>>> rawQuery(String sql,
+      [List<dynamic>? arguments]) async {
     final Database db = await getDatabase();
     return await db.rawQuery(sql, arguments);
   }
 
-  Future<int> delete(String table, {String? where, List<dynamic>? whereArgs}) async {
+  Future<int> delete(String table,
+      {String? where, List<dynamic>? whereArgs}) async {
     final Database db = await getDatabase();
     return db.delete(table, where: where, whereArgs: whereArgs);
   }
 
-  Future<int> update(String table, Map<String, dynamic> values, {required String where, List<dynamic>? whereArgs}) async {
+  Future<int> update(String table, Map<String, dynamic> values,
+      {required String where, List<dynamic>? whereArgs}) async {
     final Database db = await getDatabase();
     return db.update(table, values, where: where, whereArgs: whereArgs);
   }
@@ -129,6 +152,12 @@ class DBProvider {
       int? limit,
       int? offset}) async {
     final db = await getDatabase();
-    return db.query(table, where: where, whereArgs: whereArgs, orderBy: orderBy, limit: limit, offset: offset, groupBy: groupBy);
+    return db.query(table,
+        where: where,
+        whereArgs: whereArgs,
+        orderBy: orderBy,
+        limit: limit,
+        offset: offset,
+        groupBy: groupBy);
   }
 }

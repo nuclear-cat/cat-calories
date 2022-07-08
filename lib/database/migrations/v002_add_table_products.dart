@@ -4,25 +4,9 @@ import 'package:sqflite_common/sqlite_api.dart';
 class V002AddTableProducts extends AbstractMigration {
   @override
   Future<void> up(Batch batch) async {
-    batch.execute('''
-				CREATE TABLE products(
-					id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-					title TEXT,
-					description TEXT NULL,
-					created_at INT,
-					updated_at INT,
-					uses_count INT,
-					profile_id INT,
-					sort_order INT DEFAULT 0,
-					barcode INT NULL,
-					calorie_content REAL NULL,
-					proteins REAL NULL,
-					fats REAL NULL,
-					carbohydrates REAL NULL,
-					
-				  FOREIGN KEY(profile_id) REFERENCES profiles(id)
-				)
-			''');
+    // batch.execute('''
+    //
+		// 	''');
 
     await batch.commit();
   }
