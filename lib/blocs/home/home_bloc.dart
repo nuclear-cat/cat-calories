@@ -49,14 +49,16 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
       yield* _fetchHomeData();
     } else if (event is CreatingCalorieItemEvent) {
       final CalorieItemModel calorieItem = CalorieItemModel(
-          id: null,
-          value: _preparedCaloriesValue,
-          sortOrder: 0,
-          eatenAt: DateTime.now(),
-          createdAt: DateTime.now(),
-          description: null,
-          profileId: _activeProfile!.id!,
-          wakingPeriodId: event.wakingPeriod.id!);
+        id: null,
+        value: _preparedCaloriesValue,
+        sortOrder: 0,
+        eatenAt: DateTime.now(),
+        createdAt: DateTime.now(),
+        description: null,
+        profileId: _activeProfile!.id!,
+        wakingPeriodId: event.wakingPeriod.id!,
+        foodIntakeId: null,
+      );
 
       await calorieItemRepository.offsetSortOrder();
       await calorieItemRepository.insert(calorieItem);
@@ -166,6 +168,7 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
       description: event.product.title,
       profileId: _activeProfile!.id!,
       wakingPeriodId: event.wakingPeriod.id!,
+      foodIntakeId: null,
     );
 
     event.product.usesCount = event.product.usesCount + 1;
@@ -215,11 +218,8 @@ class HomeBloc extends Bloc<AbstractHomeEvent, AbstractHomeState> {
     final List<DayResultModel> _dayResultsList30days =
         await calorieItemRepository.fetchDaysByProfile(activeProfile, 30);
 
-
     final List<DayResultModel> _dayResultsList2days =
         await calorieItemRepository.fetchDaysByProfile(activeProfile, 2);
-
-
 
     final List<ProfileModel> _profiles = await profileRepository.fetchAll();
     final List<WakingPeriodModel> wakingPeriods =

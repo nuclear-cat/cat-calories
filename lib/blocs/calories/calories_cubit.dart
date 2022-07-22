@@ -31,14 +31,16 @@ class CaloriesCubit extends Cubit<AbstractCaloriesState> {
     ProfileModel profile = await ProfileResolver().resolve();
 
     CalorieItemModel calorieItem = CalorieItemModel(
-        id: null,
-        value: value,
-        description: null,
-        sortOrder: 0,
-        eatenAt: null,
-        createdAt: dayStart,
-        profileId: profile.id!,
-        wakingPeriodId: null);
+      id: null,
+      value: value,
+      description: null,
+      sortOrder: 0,
+      eatenAt: null,
+      createdAt: dayStart,
+      profileId: profile.id!,
+      wakingPeriodId: null,
+      foodIntakeId: null,
+    );
 
     calorieItemRepository.insert(calorieItem);
 

@@ -26,9 +26,14 @@ class DBProvider {
     Directory documentsDir = await getApplicationDocumentsDirectory();
     String path = join(documentsDir.path, 'app.db');
 
+    final db = await openDatabase(path);
+    final lastMigrationVersion = await MigrationExecutor().getExecutedMigrationVersion(db);
+
+
+
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onOpen: (db) async {},
       onCreate: (Database db, int version) async {
         await db.execute('''
@@ -43,7 +48,7 @@ class DBProvider {
 			''');
 
         await db.execute('''
-				CREATE TABLE waking_periods(
+				CREATE TABLE waking_periods (
 					id INTEGER PRIMARY KEY NOT NULL,
 					description TEXT NULL,
 					created_at INT,				
@@ -59,7 +64,7 @@ class DBProvider {
 			''');
 
         await db.execute('''
-				CREATE TABLE calorie_items(
+				CREATE TABLE calorie_items (
 					id INTEGER PRIMARY KEY NOT NULL,
 					value REAL,
 					title TEXT NULL,

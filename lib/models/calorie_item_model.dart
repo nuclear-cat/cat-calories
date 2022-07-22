@@ -7,6 +7,7 @@ class CalorieItemModel {
   DateTime createdAt;
   int profileId;
   int? wakingPeriodId;
+  int? foodIntakeId;
 
   CalorieItemModel({
     required this.id,
@@ -17,17 +18,22 @@ class CalorieItemModel {
     required this.createdAt,
     required this.profileId,
     required this.wakingPeriodId,
+    required this.foodIntakeId,
   });
 
-  factory CalorieItemModel.fromJson(Map<String, dynamic> json) => CalorieItemModel(
+  factory CalorieItemModel.fromJson(Map<String, dynamic> json) =>
+      CalorieItemModel(
         id: json['id'],
         value: json['value'],
         description: json['description'],
         sortOrder: json['sort_order'],
-        eatenAt: json['eaten_at'] == null ? null : DateTime.fromMillisecondsSinceEpoch(json['eaten_at']),
+        eatenAt: json['eaten_at'] == null
+            ? null
+            : DateTime.fromMillisecondsSinceEpoch(json['eaten_at']),
         createdAt: DateTime.fromMillisecondsSinceEpoch(json['created_at']),
         profileId: json['profile_id'],
         wakingPeriodId: json['waking_period_id'],
+        foodIntakeId: json['food_intake_id'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -35,11 +41,16 @@ class CalorieItemModel {
         'value': value,
         'description': description,
         'created_at': createdAt.millisecondsSinceEpoch,
-        'created_at_day': (DateTime(createdAt.year, createdAt.month, createdAt.day).millisecondsSinceEpoch / 100000).round(),
+        'created_at_day':
+            (DateTime(createdAt.year, createdAt.month, createdAt.day)
+                        .millisecondsSinceEpoch /
+                    100000)
+                .round(),
         'eaten_at': eatenAt == null ? null : eatenAt!.millisecondsSinceEpoch,
         'sort_order': sortOrder,
         'profile_id': profileId,
         'waking_period_id': wakingPeriodId,
+        'food_intake_id': foodIntakeId,
       };
 
   bool isEaten() {

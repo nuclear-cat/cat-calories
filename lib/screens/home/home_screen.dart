@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:cat_calories/models/waking_period_model.dart';
 import 'package:cat_calories/screens/calories/day_calories_page.dart';
+import 'package:cat_calories/screens/create_food_intake_screen.dart';
 import 'package:cat_calories/screens/create_product_screen.dart';
 import 'package:cat_calories/screens/home/_app_drawer.dart';
 import 'package:cat_calories/screens/home/_calorie_items_view.dart';
 import 'package:cat_calories/screens/home/_days_view.dart';
+import 'package:cat_calories/screens/home/_food_intakes.dart';
 import 'package:cat_calories/screens/home/_waking_periods_view.dart';
 import 'package:cat_calories/screens/products/products_page.dart';
 import 'package:cat_calories/ui/colors.dart';
@@ -89,12 +91,13 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       body: Scaffold(
         body: DefaultTabController(
-          length: 4,
+          length: 5,
           child: Scaffold(
             drawer: Drawer(
               child: AppDrawer(),
             ),
             appBar: AppBar(
+              backgroundColor: Colors.white,
               actions: [
                 BlocBuilder<HomeBloc, AbstractHomeState>(
                     builder: (context, state) {
@@ -114,6 +117,10 @@ class _HomeScreenState extends State<HomeScreen>
                             value: 'products',
                             child: ListTile(title: Text('Products')),
                           ),
+                          PopupMenuItem<String>(
+                            value: 'create_food_intake',
+                            child: ListTile(title: Text('Create food intake')),
+                          ),
                         ];
                       },
                       onSelected: (String value) {
@@ -127,16 +134,17 @@ class _HomeScreenState extends State<HomeScreen>
                         } else if (value == 'calories') {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) {
-                                  return DayCaloriesPage(state.startDate);
-                                }),
+                            MaterialPageRoute(builder: (context) {
+                              return DayCaloriesPage(state.startDate);
+                            }),
                           );
                         } else if (value == 'products') {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ProductsPage()),
+                              builder: (context) =>
+                                  CreateFoodIntakeScreen(state.activeProfile),
+                            ),
                           );
                         }
                       },
@@ -153,7 +161,6 @@ class _HomeScreenState extends State<HomeScreen>
               ],
               bottom: TabBar(
                 isScrollable: true,
-
                 labelStyle: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -170,6 +177,9 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                   Tab(
                     text: 'Days',
+                  ),
+                  Tab(
+                    text: 'Food intakes',
                   ),
                 ],
               ),
@@ -205,6 +215,7 @@ class _HomeScreenState extends State<HomeScreen>
                 CalorieItemsView(),
                 WakingPeriodsView(),
                 DaysView(),
+                FoodIntakesView(),
               ],
             ),
           ),

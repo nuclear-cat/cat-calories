@@ -4,7 +4,6 @@ class CustomTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       appBarTheme: AppBarTheme(
-        // backgroundColor: Colors.red,
         toolbarTextStyle: TextStyle(fontSize: 16),
         titleTextStyle: TextStyle(fontSize: 16),
         textTheme: TextTheme(
@@ -20,7 +19,7 @@ class CustomTheme {
       ),
       textTheme: TextTheme(),
       colorScheme: ColorScheme.light(
-        primary: const Color(0xffffffff),
+        // primary: const Color(0xffffffff),
         surface: const Color(0xff000000),
         background: const Color(0xff000000),
         onPrimary: const Color(0xff000000),
